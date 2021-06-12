@@ -1,13 +1,12 @@
-const express = require('express');
-const chalk = require('chalk');
+import express from 'express';
+import chalk from 'chalk';
+
 const app = express();
 const port = 3000;
 const log = console.log;
 
-const a = 0;
-
-app.get('/', (req, res) => {
-  res.send('Hello World 🦙!');
+app.get('/', (_, res) => {
+  res.send('Hello World 🦧!');
 });
 
 app.listen(port, () => {
