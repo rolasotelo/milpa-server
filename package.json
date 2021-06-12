@@ -1,0 +1,18 @@
+{
+  "name": "la-milpa-server",
+  "version": "1.0.0",
+  "description": "server for la milpa card game",
+  "main": "src/index.js",
+  "repository": "git@github.com:rsoteloa/la-milpa-server.git",
+  "author": "Rolando Sotelo <rolando.s.alarcon@icloud.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "4.17.1"
+  },
+  "devDependencies": {
+    "chalk": "4.1.1"
+  }
+}
