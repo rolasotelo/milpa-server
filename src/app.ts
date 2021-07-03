@@ -5,7 +5,12 @@ import { Server, Socket } from 'socket.io';
 const log = console.log;
 
 export function createApplication(httpServer: HttpServer): Server {
-  const io = new Server(httpServer);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: 'http://localhost:8080',
+      methods: ['GET', 'POST'],
+    },
+  });
 
   io.on('connect', (socket: Socket) => {
     log(
