@@ -1,8 +1,8 @@
-import express from 'express';
 import chalk from 'chalk';
+import express from 'express';
 import { createServer } from 'http';
-import { createApplication } from './app';
 import path from 'path';
+import { createApplication } from './app';
 
 const port = 3000;
 const log = console.log;
