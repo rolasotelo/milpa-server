@@ -13,9 +13,19 @@ export function createApplication(httpServer: HttpServer): Server {
   });
 
   io.on('connect', (socket: Socket) => {
+    const gameCode = socket.handshake.query.gameCode;
+    if (gameCode) {
+      socket.join(gameCode);
+      io.to(gameCode).emit(
+        'room join',
+        `${socket.id} joined the room ${gameCode}`,
+      );
+    }
+
     log(
-      chalk.whiteBright.bgBlack.bold('A user connected'),
+      chalk.whiteBright.bgBlack.bold('A user connected - ', socket.id),
       chalk.blueBright.bgBlack.bold('total: ', io.engine.clientsCount),
+      chalk.greenBright.bgBlack.bold('code: ', gameCode),
     );
     socket.on('disconnect', (reason) => {
       log(chalk.redBright.bgBlack.bold('User disconected: ', reason));
