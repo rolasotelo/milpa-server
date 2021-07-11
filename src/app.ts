@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { Server as HttpServer } from 'http';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import { MiSocket } from './common/types/types';
 
 const log = console.log;
@@ -13,17 +13,19 @@ export function createApplication(httpServer: HttpServer): Server {
     },
   });
 
+  io.use((socket: MiSocket, next) => {
+    const nickname = socket.handshake.auth.nickname;
+    if (nickname === undefined) {
+      return next(new Error('invalid nickname'));
+    }
+    socket.nickname = nickname;
+    next();
+  });
+
   io.on('connect', (socket: MiSocket) => {
     const gameCode = socket.handshake.query.gameCode;
     const nickname = socket.handshake.auth.nickname;
-
-    io.use((socket: MiSocket, next) => {
-      if (!nickname) {
-        return next(new Error('invalid nickname'));
-      }
-      socket.nickname = nickname;
-      next();
-    });
+    log(nickname);
 
     if (gameCode) {
       socket.join(gameCode);
