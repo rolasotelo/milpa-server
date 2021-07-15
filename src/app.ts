@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import { MiSocket } from './common/types/types';
+import { MiRemoteSocket, MiSocket } from './common/types/types';
 
 const log = console.log;
 
@@ -22,16 +22,26 @@ export function createApplication(httpServer: HttpServer): Server {
     next();
   });
 
-  io.on('connect', (socket: MiSocket) => {
+  io.on('connect', async (socket: MiSocket) => {
     const gameCode = socket.handshake.query.gameCode;
     const nickname = socket.handshake.auth.nickname;
-    log(nickname);
 
     if (gameCode) {
       socket.join(gameCode);
       socket
         .to(gameCode)
         .emit('room join', `${socket.id} joined the room ${gameCode}`);
+
+      // fetch existing users
+      const users = [];
+      const sockets: MiRemoteSocket[] = await io.in(gameCode).fetchSockets();
+      for (let skt of sockets) {
+        users.push({
+          userID: skt.id,
+          nickname: skt.nickname,
+        });
+      }
+      socket.emit('users', users);
     }
 
     log(
