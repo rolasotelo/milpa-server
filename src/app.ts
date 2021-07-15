@@ -42,6 +42,12 @@ export function createApplication(httpServer: HttpServer): Server {
         });
       }
       socket.emit('users', users);
+
+      // notify existing users
+      socket.in(gameCode).emit('user connected', {
+        userID: socket.id,
+        username: socket.nickname,
+      });
     }
 
     log(
