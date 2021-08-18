@@ -6,6 +6,7 @@ import { MiRemoteSocket, MiSocket } from './common/types/types';
 const log = console.log;
 
 export function createApplication(httpServer: HttpServer): Server {
+  // TODO create env for origin
   const io = new Server(httpServer, {
     cors: {
       origin: 'http://localhost:8080',
@@ -13,6 +14,7 @@ export function createApplication(httpServer: HttpServer): Server {
     },
   });
 
+  // * middlewares
   io.use((socket: MiSocket, next) => {
     const nickname = socket.handshake.auth.nickname;
     if (nickname === undefined) {
@@ -22,19 +24,20 @@ export function createApplication(httpServer: HttpServer): Server {
     next();
   });
 
+  // * once middlewares pass
   io.on('connect', async (socket: MiSocket) => {
-    const gameCode = socket.handshake.query.gameCode;
+    const roomCode = socket.handshake.query.gameCode;
     const nickname = socket.handshake.auth.nickname;
 
-    if (gameCode) {
-      socket.join(gameCode);
+    if (roomCode) {
+      socket.join(roomCode);
       socket
-        .to(gameCode)
-        .emit('room join', `${socket.id} joined the room ${gameCode}`);
+        .to(roomCode)
+        .emit('room join', `${socket.id} joined the room ${roomCode}`);
 
-      // fetch existing users
+      // + fetch existing users in room
       const users = [];
-      const sockets: MiRemoteSocket[] = await io.in(gameCode).fetchSockets();
+      const sockets: MiRemoteSocket[] = await io.in(roomCode).fetchSockets();
       for (let skt of sockets) {
         users.push({
           userID: skt.id,
@@ -43,16 +46,18 @@ export function createApplication(httpServer: HttpServer): Server {
       }
       socket.emit('users', users);
 
-      // notify existing users
-      socket.in(gameCode).emit('user connected', {
+      // + notify existing users
+      socket.in(roomCode).emit('user connected', {
         userID: socket.id,
-        username: socket.nickname,
+        nickname: socket.nickname,
       });
+    } else {
+      // ? what should I do if there is no gameCode in the handshake
     }
 
     log(
       chalk.whiteBright.bgBlack.bold(nickname, 'connected -', socket.id),
-      chalk.greenBright.bgBlack.bold('room: ', gameCode),
+      chalk.greenBright.bgBlack.bold('room: ', roomCode),
     );
     log(chalk.blueBright.bgBlack.bold('total: ', io.engine.clientsCount));
     socket.on('disconnect', (reason) => {
