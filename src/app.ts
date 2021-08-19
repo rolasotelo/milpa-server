@@ -30,11 +30,6 @@ export function createApplication(httpServer: HttpServer): Server {
     const nickname = socket.handshake.auth.nickname;
 
     if (roomCode) {
-      socket.join(roomCode);
-      socket
-        .to(roomCode)
-        .emit('room join', `${socket.id} joined the room ${roomCode}`);
-
       // + fetch existing users in room
       const users = [];
       const sockets: MiRemoteSocket[] = await io.in(roomCode).fetchSockets();
@@ -44,13 +39,30 @@ export function createApplication(httpServer: HttpServer): Server {
           nickname: skt.nickname,
         });
       }
-      socket.emit('users', users);
 
-      // + notify existing users
-      socket.in(roomCode).emit('user connected', {
-        userID: socket.id,
-        nickname: socket.nickname,
-      });
+      if (sockets.length < 2) {
+        socket.join(roomCode);
+
+        users.push({
+          userID: socket.id,
+          nickname: socket.nickname,
+        });
+
+        socket
+          .to(roomCode)
+          .emit('room join', `${socket.id} joined the room ${roomCode}`);
+
+        socket.in(roomCode).emit('user connected', {
+          userID: socket.id,
+          nickname: socket.nickname,
+        });
+      } else {
+        socket.in(roomCode).emit('connection attempted', {
+          userID: socket.id,
+          nickname: socket.nickname,
+        });
+      }
+      socket.emit('users', users);
     } else {
       // ? what should I do if there is no gameCode in the handshake
     }
