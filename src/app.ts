@@ -3,6 +3,7 @@ import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import { MAX_PLAYERS } from './common/constants';
 import { MiRemoteSocket, MiSocket } from './common/types/types';
+import crypto from 'crypto';
 
 const log = console.log;
 
@@ -15,13 +16,30 @@ export function createApplication(httpServer: HttpServer): Server {
     },
   });
 
+  const randomId = () => crypto.randomBytes(8).toString('hex');
+  const { InMemorySessionStore } = require('./utils/sessionStore');
+  const sessionStore = new InMemorySessionStore();
+
   // * middlewares
   io.use((socket: MiSocket, next) => {
+    const sessionID = socket.handshake.auth.sessionID;
+    if (sessionID) {
+      // find existing session
+      const session = sessionStore.findSession(sessionID);
+      if (session) {
+        socket.sessionID = sessionID;
+        socket.userID = session.userID;
+        socket.nickname = session.nickname;
+        return next();
+      }
+    }
     const nickname = socket.handshake.auth.nickname;
-    if (nickname === undefined) {
+    if (!nickname) {
       return next(new Error('invalid nickname'));
     }
     socket.nickname = nickname;
+    socket.sessionID = randomId();
+    socket.userID = randomId();
     next();
   });
 
