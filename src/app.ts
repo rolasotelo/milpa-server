@@ -1,4 +1,4 @@
-import chalk, { italic } from 'chalk';
+import chalk from 'chalk';
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import { MAX_PLAYERS } from './common/constants';
@@ -10,7 +10,7 @@ export function createApplication(httpServer: HttpServer): Server {
   // TODO create env for origin
   const io = new Server(httpServer, {
     cors: {
-      origin: 'http://localhost:8080',
+      origin: ['http://localhost:8080', 'http://127.0.0.1:5500'],
       methods: ['GET', 'POST'],
     },
   });
