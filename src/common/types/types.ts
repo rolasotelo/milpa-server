@@ -5,6 +5,7 @@ export interface MiSocket extends Socket {
   nickname?: string;
   sessionID?: string;
   userID?: string;
+  roomCode: string | string[];
 }
 
 export interface MiRemoteSocket extends RemoteSocket<DefaultEventsMap> {

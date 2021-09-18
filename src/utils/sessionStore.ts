@@ -1,7 +1,8 @@
-interface Session {
+export interface Session {
   userID: string;
   nickname: string;
   connected: boolean;
+  roomCode: string;
 }
 
 /* abstract */ class SessionStore {

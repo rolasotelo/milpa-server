@@ -10,4 +10,5 @@ Changelog for [la-milpa-server](https://github.com/rolasotelo/la-milpa-server)
 
     Also it is needed to start a timer when players leave for then automatically closing the room.
 
-- I plan to check on https://socket.io/get-started/private-messaging-part-2/ to solve the 'persist players' issue
+- I plan to check on https://socket.io/get-started/private-messaging-part-2/ to solve the 'persist players' issue.
+- Session storage is initially implemented in memory.
