@@ -3,8 +3,13 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 export interface MiSocket extends Socket {
   nickname?: string;
+  sessionID?: string;
+  userID?: string;
+  roomCode: string | string[];
 }
 
 export interface MiRemoteSocket extends RemoteSocket<DefaultEventsMap> {
   nickname?: string;
+  sessionID?: string;
+  userID?: string;
 }
