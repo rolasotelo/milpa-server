@@ -25,8 +25,6 @@ export function createApplication(httpServer: HttpServer): Server {
   io.use((socket: MiSocket, next) => {
     const sessionID = socket.handshake.auth.sessionID;
     if (sessionID) {
-      log('si sessionID', sessionID);
-      log('roomcode', socket.roomCode);
       // find existing session
       const session: Session = sessionStore.findSession(sessionID);
       if (session) {
@@ -34,6 +32,8 @@ export function createApplication(httpServer: HttpServer): Server {
         socket.userID = session.userID;
         socket.nickname = session.nickname;
         socket.roomCode = session.roomCode;
+        log('si session found, sessionID:', sessionID);
+        log('roomcode', socket.roomCode);
         return next();
       }
     }
@@ -45,7 +45,7 @@ export function createApplication(httpServer: HttpServer): Server {
     if (!roomCode) {
       return next(new Error('invalid gamecode'));
     }
-    log('no sessionID', sessionID);
+    log('no session found, sessionID:', sessionID);
     log('roomcode', roomCode);
     socket.nickname = nickname;
     socket.roomCode = roomCode;
@@ -60,6 +60,7 @@ export function createApplication(httpServer: HttpServer): Server {
     sessionStore.saveSession(socket.sessionID, {
       userID: socket.userID,
       nickname: socket.nickname,
+      roomCode: socket.roomCode,
       connected: true,
     });
 
@@ -118,14 +119,28 @@ export function createApplication(httpServer: HttpServer): Server {
     log(
       chalk.whiteBright.bgBlack.bold(
         socket.nickname,
-        'connected -',
+        'connected - userID:',
         socket.userID,
       ),
       chalk.greenBright.bgBlack.bold('room: ', socket.roomCode),
     );
-    log(chalk.blueBright.bgBlack.bold('total: ', io.engine.clientsCount));
+    log('sessions', sessionStore.findAllSessions());
+    log(
+      chalk.blueBright.bgBlack.bold('total clients: ', io.engine.clientsCount),
+    );
     socket.on('disconnect', (reason) => {
       log(chalk.redBright.bgBlack.bold('User disconected: ', reason));
+
+      // socket.in(socket.roomCode).emit('player disconnected', {
+      //   userID: socket.userID,
+      //   nickname: socket.nickname,
+      // });
+      // sessionStore.saveSession(socket.sessionID, {
+      //   userID: socket.userID,
+      //   nickname: socket.nickname,
+      //   connected: false,
+      // });
+      // log('sessions', sessionStore.findAllSessions());
     });
     socket.on('chat message', (msg) => {
       log(chalk.blue.bgBlack('Message:') + chalk.gray.bgBlack(msg));
