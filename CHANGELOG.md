@@ -12,3 +12,5 @@ Changelog for [la-milpa-server](https://github.com/rolasotelo/la-milpa-server)
 
 - I plan to check on https://socket.io/get-started/private-messaging-part-2/ to solve the 'persist players' issue.
 - Session storage is initially implemented in memory.
+- Maybe a timer to close a room and player sessions after player disconnections will be needed, because now you can always come back to the room.
+- A logical follow up to this issue will probably be working on the match workflow and the messages that will be send during it.
