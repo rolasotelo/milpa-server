@@ -6,10 +6,25 @@ export interface MiSocket extends Socket {
   sessionID?: string;
   userID?: string;
   roomCode: string | string[];
+  gameStatus: GameStatus;
 }
 
 export interface MiRemoteSocket extends RemoteSocket<DefaultEventsMap> {
   nickname?: string;
   sessionID?: string;
   userID?: string;
+}
+
+interface GameStatus {
+  yourTurn: boolean;
+  score: number;
+  milpas: string[][];
+}
+
+export interface Session {
+  userID: string;
+  nickname: string;
+  connected: boolean;
+  roomCode: string;
+  gameStatus: GameStatus;
 }

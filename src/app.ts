@@ -3,8 +3,7 @@ import crypto from 'crypto';
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import { MAX_PLAYERS } from './common/constants';
-import { MiRemoteSocket, MiSocket } from './common/types/types';
-import { Session } from './utils/sessionStore';
+import { MiRemoteSocket, MiSocket, Session } from './common/types/types';
 
 const log = console.log;
 
@@ -32,6 +31,7 @@ export function createApplication(httpServer: HttpServer): Server {
         socket.userID = session.userID;
         socket.nickname = session.nickname;
         socket.roomCode = session.roomCode;
+        socket.gameStatus = session.gameStatus;
         log('si session found, sessionID:', sessionID);
         log('roomcode', socket.roomCode);
         return next();
@@ -56,21 +56,6 @@ export function createApplication(httpServer: HttpServer): Server {
 
   // * once middlewares pass
   io.on('connect', async (socket: MiSocket) => {
-    // persist session
-    sessionStore.saveSession(socket.sessionID, {
-      userID: socket.userID,
-      nickname: socket.nickname,
-      roomCode: socket.roomCode,
-      connected: true,
-    });
-
-    // emit session details
-    socket.emit('session', {
-      sessionID: socket.sessionID,
-      userID: socket.userID,
-      roomCode: socket.roomCode,
-    });
-
     // + fetch existing users in room
     const users = [];
     const sockets: MiRemoteSocket[] = await io
@@ -83,7 +68,36 @@ export function createApplication(httpServer: HttpServer): Server {
       });
     }
 
-    if (sockets.length < MAX_PLAYERS) {
+    const playersInRoom = sockets.length;
+    const actualGameStatus = socket.gameStatus
+      ? socket.gameStatus
+      : {
+          yourTurn: playersInRoom === 0,
+          score: 0,
+          milpas: [
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+          ],
+        };
+
+    if (playersInRoom < MAX_PLAYERS) {
+      // persist session
+      sessionStore.saveSession(socket.sessionID, {
+        userID: socket.userID,
+        nickname: socket.nickname,
+        roomCode: socket.roomCode,
+        connected: true,
+        gameStatus: actualGameStatus,
+      });
+
+      // emit session details
+      socket.emit('session', {
+        sessionID: socket.sessionID,
+        userID: socket.userID,
+        roomCode: socket.roomCode,
+        gameStatus: actualGameStatus,
+      });
+
       socket.join(socket.roomCode);
 
       users.push({
@@ -140,6 +154,7 @@ export function createApplication(httpServer: HttpServer): Server {
         nickname: socket.nickname,
         roomCode: socket.roomCode,
         connected: false,
+        gameStatus: actualGameStatus,
       });
       log('sessions', sessionStore.findAllSessions());
     });

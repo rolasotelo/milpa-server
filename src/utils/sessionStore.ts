@@ -1,9 +1,4 @@
-export interface Session {
-  userID: string;
-  nickname: string;
-  connected: boolean;
-  roomCode: string;
-}
+import { Session } from 'src/common/types/types';
 
 /* abstract */ class SessionStore {
   findSession(_id: string) {}
