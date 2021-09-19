@@ -131,16 +131,17 @@ export function createApplication(httpServer: HttpServer): Server {
     socket.on('disconnect', (reason) => {
       log(chalk.redBright.bgBlack.bold('User disconected: ', reason));
 
-      // socket.in(socket.roomCode).emit('player disconnected', {
-      //   userID: socket.userID,
-      //   nickname: socket.nickname,
-      // });
-      // sessionStore.saveSession(socket.sessionID, {
-      //   userID: socket.userID,
-      //   nickname: socket.nickname,
-      //   connected: false,
-      // });
-      // log('sessions', sessionStore.findAllSessions());
+      socket.in(socket.roomCode).emit('player disconnected', {
+        userID: socket.userID,
+        nickname: socket.nickname,
+      });
+      sessionStore.saveSession(socket.sessionID, {
+        userID: socket.userID,
+        nickname: socket.nickname,
+        roomCode: socket.roomCode,
+        connected: false,
+      });
+      log('sessions', sessionStore.findAllSessions());
     });
     socket.on('chat message', (msg) => {
       log(chalk.blue.bgBlack('Message:') + chalk.gray.bgBlack(msg));
