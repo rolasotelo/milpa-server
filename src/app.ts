@@ -85,6 +85,7 @@ export function createApplication(httpServer: HttpServer): Server {
             ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
           ],
         };
+    socket.gameStatus = actualGameStatus;
 
     if (playersInRoom < MAX_PLAYERS) {
       // persist session
@@ -172,16 +173,24 @@ export function createApplication(httpServer: HttpServer): Server {
     });
     socket.on(
       'player action',
-      (sessionIDs: string[], newGameStatus: GameStatus) => {
-        sessionIDs.forEach((sessionID) => {
-          const session: Session = sessionStore.findSession(sessionID);
-          if (session) {
-            sessionStore.saveSession({ ...session, newGameStatus });
-          }
-        });
-        socket.to(socket.roomCode).emit('game status updated', newGameStatus);
+      (sessionID: string, newGameStatus: GameStatus) => {
+        const session: Session = sessionStore.findSession(sessionID);
+
+        if (session) {
+          sessionStore.saveSession(sessionID, {
+            ...session,
+            gameStatus: newGameStatus,
+          });
+        }
+
+        socket
+          .to(socket.roomCode)
+          .emit(
+            'game status updated, session',
+            sessionStore.findSession(sessionID),
+          );
         log(
-          chalk.blue.bgBlack(`Player turn (${sessionIDs[0]}):`) +
+          chalk.blue.bgBlack(`Player turn (${sessionID}):`) +
             chalk.gray.bgBlack(newGameStatus.milpas),
         );
       },
