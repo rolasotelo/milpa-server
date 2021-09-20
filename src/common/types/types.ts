@@ -13,9 +13,10 @@ export interface MiRemoteSocket extends RemoteSocket<DefaultEventsMap> {
   nickname?: string;
   sessionID?: string;
   userID?: string;
+  gameStatus?: GameStatus;
 }
 
-interface GameStatus {
+export interface GameStatus {
   yourTurn: boolean;
   score: number;
   milpas: string[][];

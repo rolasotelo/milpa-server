@@ -3,7 +3,12 @@ import crypto from 'crypto';
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import { MAX_PLAYERS } from './common/constants';
-import { MiRemoteSocket, MiSocket, Session } from './common/types/types';
+import {
+  GameStatus,
+  MiRemoteSocket,
+  MiSocket,
+  Session,
+} from './common/types/types';
 
 const log = console.log;
 
@@ -65,6 +70,7 @@ export function createApplication(httpServer: HttpServer): Server {
       users.push({
         userID: skt.userID,
         nickname: skt.nickname,
+        gameStatus: skt.gameStatus,
       });
     }
 
@@ -103,6 +109,7 @@ export function createApplication(httpServer: HttpServer): Server {
       users.push({
         userID: socket.userID,
         nickname: socket.nickname,
+        gameStatus: actualGameStatus,
       });
 
       socket
@@ -115,6 +122,7 @@ export function createApplication(httpServer: HttpServer): Server {
       socket.in(socket.roomCode).emit('user connected', {
         userID: socket.userID,
         nickname: socket.nickname,
+        gameStatus: actualGameStatus,
       });
 
       socket.emit('users', users);
@@ -162,6 +170,22 @@ export function createApplication(httpServer: HttpServer): Server {
       log(chalk.blue.bgBlack('Message:') + chalk.gray.bgBlack(msg));
       io.emit('chat message', msg);
     });
+    socket.on(
+      'player action',
+      (sessionIDs: string[], newGameStatus: GameStatus) => {
+        sessionIDs.forEach((sessionID) => {
+          const session: Session = sessionStore.findSession(sessionID);
+          if (session) {
+            sessionStore.saveSession({ ...session, newGameStatus });
+          }
+        });
+        socket.to(socket.roomCode).emit('game status updated', newGameStatus);
+        log(
+          chalk.blue.bgBlack(`Player turn (${sessionIDs[0]}):`) +
+            chalk.gray.bgBlack(newGameStatus.milpas),
+        );
+      },
+    );
   });
 
   return io;
