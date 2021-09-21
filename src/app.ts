@@ -147,7 +147,7 @@ export function createApplication(httpServer: HttpServer): Server {
       ),
       chalk.greenBright.bgBlack.bold('room: ', socket.roomCode),
     );
-    log('sessions', sessionStore.findAllSessions());
+
     log(
       chalk.blueBright.bgBlack.bold('total clients: ', io.engine.clientsCount),
     );
@@ -163,20 +163,17 @@ export function createApplication(httpServer: HttpServer): Server {
         nickname: socket.nickname,
         roomCode: socket.roomCode,
         connected: false,
-        gameStatus: actualGameStatus,
+        gameStatus: socket.gameStatus,
       });
-      log('sessions', sessionStore.findAllSessions());
     });
-    socket.on('chat message', (msg) => {
-      log(chalk.blue.bgBlack('Message:') + chalk.gray.bgBlack(msg));
-      io.emit('chat message', msg);
-    });
+
     socket.on(
       'player action',
       (sessionID: string, newGameStatus: GameStatus) => {
         const session: Session = sessionStore.findSession(sessionID);
 
         if (session) {
+          socket.gameStatus = newGameStatus;
           sessionStore.saveSession(sessionID, {
             ...session,
             gameStatus: newGameStatus,
@@ -190,7 +187,7 @@ export function createApplication(httpServer: HttpServer): Server {
             sessionStore.findSession(sessionID),
           );
         log(
-          chalk.blue.bgBlack(`Player turn (${sessionID}):`) +
+          chalk.blue.bgBlack(`Player turn (${socket.userID}):`) +
             chalk.gray.bgBlack(newGameStatus.milpas),
         );
       },
