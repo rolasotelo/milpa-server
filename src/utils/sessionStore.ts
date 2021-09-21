@@ -1,12 +1,12 @@
 import { Session } from 'src/common/types/types';
 
-/* abstract */ class SessionStore {
+class SessionStore {
   findSession(_id: string) {}
   saveSession(_id: string, _session: Session) {}
   findAllSessions() {}
 }
 
-class InMemorySessionStore extends SessionStore {
+export class InMemorySessionStore extends SessionStore {
   sessions: Map<string, Session>;
   constructor() {
     super();
@@ -25,7 +25,3 @@ class InMemorySessionStore extends SessionStore {
     return [...this.sessions.values()];
   }
 }
-
-module.exports = {
-  InMemorySessionStore,
-};

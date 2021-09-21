@@ -1,11 +1,11 @@
-import { RemoteSocket, Socket } from 'socket.io';
+import { RemoteSocket, Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 export interface MiSocket extends Socket {
-  nickname?: string;
-  sessionID?: string;
-  userID?: string;
-  roomCode: string | string[];
+  nickname: string;
+  sessionID: string;
+  userID: string;
+  roomCode: string;
   gameStatus: GameStatus;
 }
 
@@ -29,3 +29,10 @@ export interface Session {
   roomCode: string;
   gameStatus: GameStatus;
 }
+
+export interface ExtendedError extends Error {
+  data?: any;
+}
+
+export interface IO
+  extends Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap> {}

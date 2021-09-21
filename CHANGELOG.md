@@ -22,3 +22,4 @@ Changelog for [la-milpa-server](https://github.com/rolasotelo/la-milpa-server)
     Create match workflow and design messages and data types of the information that will be shared.
 
 - I plan to add the 'game status' (Not sure yet how i will call it) to the session stored for every player, it will probably be an object formed with at least the information of both players milpas, the current score for each one and who's turn it is. Then everytime a player in client takes a action, an event is recieved that updates the 'game status' of all players in the room. (rola@hey.com)
+- I refactor the project to make it cleaner and easier to read, with the helpof handlers and logging functions. I followed what was suggested here https://socket.io/docs/v4/server-application-structure/#registering-event-handlers (rola@hey.com)
