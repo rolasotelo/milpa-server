@@ -60,17 +60,6 @@ export const joinRoom = async (
   }
 
   const playersInRoom = sockets.length;
-  const actualGameStatus = socket.gameStatus
-    ? socket.gameStatus
-    : {
-        yourTurn: playersInRoom === 0,
-        score: 0,
-        milpas: [
-          ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-          ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
-        ],
-      };
-  socket.gameStatus = actualGameStatus;
 
   if (playersInRoom < MAX_PLAYERS) {
     // persist session
@@ -79,7 +68,7 @@ export const joinRoom = async (
       nickname: socket.nickname,
       roomCode: socket.roomCode,
       connected: true,
-      gameStatus: actualGameStatus,
+      gameStatus: socket.gameStatus,
     });
 
     // emit session details
@@ -87,7 +76,7 @@ export const joinRoom = async (
       sessionID: socket.sessionID,
       userID: socket.userID,
       roomCode: socket.roomCode,
-      gameStatus: actualGameStatus,
+      gameStatus: socket.gameStatus,
     });
 
     socket.join(socket.roomCode);
@@ -95,7 +84,7 @@ export const joinRoom = async (
     users.push({
       userID: socket.userID,
       nickname: socket.nickname,
-      gameStatus: actualGameStatus,
+      gameStatus: socket.gameStatus,
     });
 
     socket
@@ -105,7 +94,7 @@ export const joinRoom = async (
     socket.in(socket.roomCode).emit('user connected', {
       userID: socket.userID,
       nickname: socket.nickname,
-      gameStatus: actualGameStatus,
+      gameStatus: socket.gameStatus,
     });
 
     socket.emit('users', users);

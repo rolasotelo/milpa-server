@@ -17,9 +17,11 @@ export interface MiRemoteSocket extends RemoteSocket<DefaultEventsMap> {
 }
 
 export interface GameStatus {
-  yourTurn: boolean;
-  score: number;
-  milpas: string[][];
+  playerTurn: string;
+  score: Map<string, number>;
+  milpas: Map<string, Milpa>;
+  cropsDeck: Crop[];
+  goodsDeck: Good[];
 }
 
 export interface Session {
@@ -36,3 +38,36 @@ export interface ExtendedError extends Error {
 
 export interface IO
   extends Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap> {}
+
+// ! Copied form Client
+export type CropAndGoodSlots = (Crop | Good | undefined)[][];
+
+export interface Milpa {
+  goods: CropAndGoodSlots;
+  crops: CropAndGoodSlots;
+}
+
+export interface Crop extends Card {}
+
+export interface Good extends Card {}
+
+interface Card {
+  id: string;
+  type: 'crop' | 'good';
+  name: string;
+  icon: string;
+  description: string;
+  resume: string;
+  rules: string;
+  modifier?: string[];
+  canInteractWith: {
+    ownEmptyMilpaSlots: boolean;
+    ownFilledMilpaSlots: boolean | string[];
+    ownEmptyEdgeSlots: boolean;
+    ownFilledEdgeSlots: boolean | string[];
+    othersEmptyMilpaSlots: boolean;
+    othersFilledMilpaSlots: boolean | string[];
+    othersEmptyEdgeSlots: boolean;
+    othersFilledEdgeSlots: boolean | string[];
+  };
+}
