@@ -52,11 +52,16 @@ export const createOrJoinRoom = async (
     .in(socket.roomCode)
     .fetchSockets();
 
-  for (let socket of socketsAlreadyInRoom) {
+  let socketAlreadyInRoom = false;
+
+  for (let oldSocket of socketsAlreadyInRoom) {
+    if (socket.userID === oldSocket.userID) {
+      socketAlreadyInRoom = !socketAlreadyInRoom;
+    }
     usersInRoom.push({
-      userID: socket.userID,
-      nickname: socket.nickname,
-      gameStatus: socket.gameStatus,
+      userID: oldSocket.userID,
+      nickname: oldSocket.nickname,
+      gameStatus: oldSocket.gameStatus,
       connected: true,
     });
   }
@@ -81,8 +86,6 @@ export const createOrJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    socket.join(socket.roomCode);
-
     socket.to(socket.roomCode).emit('player joined the room', {
       sessionID: socket.sessionID,
       userID: socket.userID,
@@ -101,12 +104,15 @@ export const createOrJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    usersInRoom.push({
-      userID: socket.userID,
-      nickname: socket.nickname,
-      gameStatus: socket.gameStatus,
-      connected: true,
-    });
+    if (!socketAlreadyInRoom) {
+      socket.join(socket.roomCode);
+      usersInRoom.push({
+        userID: socket.userID,
+        nickname: socket.nickname,
+        gameStatus: socket.gameStatus,
+        connected: true,
+      });
+    }
 
     // + a todos
     io.to(socket.roomCode!).emit('users in room', usersInRoom);
