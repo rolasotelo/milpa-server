@@ -108,20 +108,21 @@ export const createOrJoinRoom = async (
       connected: true,
     });
 
-    socket.emit('users in room', usersInRoom);
-    socket.in(socket.roomCode).emit('users in room', usersInRoom);
+    // + a todos
+    io.to(socket.roomCode!).emit('users in room', usersInRoom);
 
-    // if (usersInRoom.length === MAX_PLAYERS) {
-    //   io.to(socket.roomCode!).emit('start game');
-    // }
+    if (usersInRoom.length === MAX_PLAYERS) {
+      socket
+        .in(socket.roomCode)
+        .emit('start game', socket.sessionID, usersInRoom);
+    }
+  } else {
+    socket.in(socket.roomCode).emit('connection attempted', {
+      userID: socket.userID,
+      nickname: socket.nickname,
+    });
+    socket.emit('room filled');
   }
-  // else {
-  //   socket.in(socket.roomCode).emit('connection attempted', {
-  //     userID: socket.userID,
-  //     nickname: socket.nickname,
-  //   });
-  //   socket.emit('room filled');
-  // }
 };
 
 export const handleUserDisconnection = (

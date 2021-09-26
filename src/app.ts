@@ -1,6 +1,10 @@
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import { MiClientSocket } from './common/types/types';
+import { GameStatus, MiClientSocket } from './common/types/types';
+import {
+  handleEndOfHandshake,
+  handleStartGameHandshake,
+} from './handlers/gameHandler';
 import {
   beforeConnectionOrReconnection,
   createOrJoinRoom,
@@ -27,6 +31,32 @@ export function createApplication(httpServer: HttpServer): Server {
   io.on('connect', async (socket: MiClientSocket) => {
     logUserConnection(io, socket);
     await createOrJoinRoom(io, socket, sessionStore);
+
+    socket.on(
+      'start game handshake',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        console.log('gameStatus start', newGameStatus);
+        handleStartGameHandshake(
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
+        );
+      },
+    );
+
+    socket.on(
+      'end of handshake',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleEndOfHandshake(
+          io,
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
+        );
+      },
+    );
 
     // socket.on('disconnect', (reason) => {
     //   handleUserDisconnection(socket, sessionStore);
