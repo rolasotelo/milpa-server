@@ -3,7 +3,9 @@ import { Server } from 'socket.io';
 import { GameStatus, MiClientSocket } from './common/types/types';
 import {
   handleEndOfHandshake,
+  handleEndUpdateMilpa,
   handleStartGameHandshake,
+  handleStartUpdateMilpa,
 } from './handlers/gameHandler';
 import {
   beforeConnectionOrReconnection,
@@ -58,17 +60,30 @@ export function createApplication(httpServer: HttpServer): Server {
       },
     );
 
+    socket.on(
+      'start update milpa',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleStartUpdateMilpa(socket, sessionStore, sessionID, newGameStatus);
+      },
+    );
+
+    socket.on(
+      'end update milpa',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleEndUpdateMilpa(
+          io,
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
+        );
+      },
+    );
+
     socket.on('disconnect', (reason) => {
       handleUserDisconnection(socket, sessionStore);
       logUserDisconnection(reason);
     });
-    // socket.on(
-    //   'player action',
-    //   (sessionID: string, newGameStatus: GameStatus) => {
-    //     handlePlayerAction(socket, sessionStore, sessionID, newGameStatus);
-    //     logPlayerAction(socket, newGameStatus);
-    //   },
-    // );
   });
 
   return io;
