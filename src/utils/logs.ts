@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { log } from '../common/constants';
-import { GameStatus, IO, MiSocket } from '../common/types/types';
+import { GameStatus, IO, MiClientSocket } from '../common/types/types';
 
-export const logUserConnection = (io: IO, socket: MiSocket) => {
+export const logUserConnection = (io: IO, socket: MiClientSocket) => {
   log(
     chalk.whiteBright.bgBlack.bold(
       socket.nickname,
@@ -20,7 +20,7 @@ export const logUserDisconnection = (reason: string) => {
 };
 
 export const logPlayerAction = (
-  socket: MiSocket,
+  socket: MiClientSocket,
   newGameStatus: GameStatus,
 ) => {
   log(

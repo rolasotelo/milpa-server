@@ -1,15 +1,15 @@
 import { RemoteSocket, Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
-export interface MiSocket extends Socket {
+export interface MiClientSocket extends Socket {
   nickname: string;
-  sessionID: string;
-  userID: string;
+  sessionID?: string;
+  userID?: string;
   roomCode: string;
-  gameStatus: GameStatus;
+  gameStatus?: GameStatus;
 }
 
-export interface MiRemoteSocket extends RemoteSocket<DefaultEventsMap> {
+export interface MiServerSocket extends RemoteSocket<DefaultEventsMap> {
   nickname?: string;
   sessionID?: string;
   userID?: string;
@@ -29,7 +29,7 @@ export interface Session {
   nickname: string;
   connected: boolean;
   roomCode: string;
-  gameStatus: GameStatus;
+  gameStatus: GameStatus | undefined;
 }
 
 export interface ExtendedError extends Error {

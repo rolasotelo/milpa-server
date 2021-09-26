@@ -1,8 +1,8 @@
-import { GameStatus, MiSocket } from 'src/common/types/types';
+import { GameStatus, MiClientSocket } from 'src/common/types/types';
 import { InMemorySessionStore } from 'src/utils/sessionStore';
 
 export const handlePlayerAction = (
-  socket: MiSocket,
+  socket: MiClientSocket,
   sessionStore: InMemorySessionStore,
   sessionID: string,
   newGameStatus: GameStatus,

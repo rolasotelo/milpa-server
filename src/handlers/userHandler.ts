@@ -2,19 +2,18 @@ import { log, MAX_PLAYERS, randomID } from '../common/constants';
 import {
   ExtendedError,
   IO,
-  MiRemoteSocket,
-  MiSocket,
+  MiServerSocket,
+  MiClientSocket,
 } from '../common/types/types';
 import { InMemorySessionStore } from '../utils/sessionStore';
 
 export const beforeConnectionOrReconnection = (
-  socket: MiSocket,
+  socket: MiClientSocket,
   next: (err?: ExtendedError | undefined) => void,
   sessionStore: InMemorySessionStore,
 ) => {
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
-    // find existing session
     const session = sessionStore.findSession(sessionID);
     if (session) {
       socket.sessionID = sessionID;
@@ -23,7 +22,6 @@ export const beforeConnectionOrReconnection = (
       socket.roomCode = session.roomCode;
       socket.gameStatus = session.gameStatus;
       log('si session found, sessionID:', sessionID);
-      log('roomcode', socket.roomCode);
       return next();
     }
   }
@@ -35,36 +33,38 @@ export const beforeConnectionOrReconnection = (
   if (!roomCode) {
     return next(new Error('invalid gamecode'));
   }
-  log('no session found, sessionID:', sessionID);
-  log('roomcode', roomCode);
+  log('no session found');
   socket.nickname = nickname;
   socket.roomCode = roomCode as string;
   socket.sessionID = randomID();
   socket.userID = randomID();
+  socket.gameStatus = undefined;
   next();
 };
 
-export const joinRoom = async (
+export const createOrJoinRoom = async (
   io: IO,
-  socket: MiSocket,
+  socket: MiClientSocket,
   sessionStore: InMemorySessionStore,
 ) => {
-  const users = [];
-  const sockets: MiRemoteSocket[] = await io.in(socket.roomCode).fetchSockets();
-  for (let skt of sockets) {
-    users.push({
-      userID: skt.userID,
-      nickname: skt.nickname,
-      gameStatus: skt.gameStatus,
+  const usersInRoom = [];
+  const socketsAlreadyInRoom: MiServerSocket[] = await io
+    .in(socket.roomCode)
+    .fetchSockets();
+
+  for (let socket of socketsAlreadyInRoom) {
+    usersInRoom.push({
+      userID: socket.userID,
+      nickname: socket.nickname,
+      gameStatus: socket.gameStatus,
+      connected: true,
     });
   }
 
-  const playersInRoom = sockets.length;
-
-  if (playersInRoom < MAX_PLAYERS) {
+  if (socketsAlreadyInRoom.length < MAX_PLAYERS) {
     // persist session
-    sessionStore.saveSession(socket.sessionID, {
-      userID: socket.userID,
+    sessionStore.saveSession(socket.sessionID!, {
+      userID: socket.userID!,
       nickname: socket.nickname,
       roomCode: socket.roomCode,
       connected: true,
@@ -72,55 +72,68 @@ export const joinRoom = async (
     });
 
     // emit session details
-    socket.emit('session', {
+    socket.emit('session saved', {
       sessionID: socket.sessionID,
       userID: socket.userID,
+      nickname: socket.nickname,
       roomCode: socket.roomCode,
+      connected: true,
       gameStatus: socket.gameStatus,
     });
 
     socket.join(socket.roomCode);
 
-    users.push({
+    socket.to(socket.roomCode).emit('player joined the room', {
+      sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
+      roomCode: socket.roomCode,
+      connected: true,
       gameStatus: socket.gameStatus,
     });
-
-    socket
-      .to(socket.roomCode)
-      .emit('room join', `${socket.userID} joined the room ${socket.roomCode}`);
 
     socket.in(socket.roomCode).emit('user connected', {
+      sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
+      roomCode: socket.roomCode,
+      connected: true,
       gameStatus: socket.gameStatus,
     });
 
-    socket.emit('users', users);
-
-    if (users.length === MAX_PLAYERS) {
-      io.to(socket.roomCode!).emit('start game');
-    }
-  } else {
-    socket.in(socket.roomCode).emit('connection attempted', {
+    usersInRoom.push({
       userID: socket.userID,
       nickname: socket.nickname,
+      gameStatus: socket.gameStatus,
+      connected: true,
     });
-    socket.emit('room filled');
+
+    socket.emit('users in room', usersInRoom);
+    socket.in(socket.roomCode).emit('users in room', usersInRoom);
+
+    // if (usersInRoom.length === MAX_PLAYERS) {
+    //   io.to(socket.roomCode!).emit('start game');
+    // }
   }
+  // else {
+  //   socket.in(socket.roomCode).emit('connection attempted', {
+  //     userID: socket.userID,
+  //     nickname: socket.nickname,
+  //   });
+  //   socket.emit('room filled');
+  // }
 };
 
 export const handleUserDisconnection = (
-  socket: MiSocket,
+  socket: MiClientSocket,
   sessionStore: InMemorySessionStore,
 ) => {
   socket.in(socket.roomCode).emit('player disconnected', {
     userID: socket.userID,
     nickname: socket.nickname,
   });
-  sessionStore.saveSession(socket.sessionID, {
-    userID: socket.userID,
+  sessionStore.saveSession(socket.sessionID!, {
+    userID: socket.userID!,
     nickname: socket.nickname,
     roomCode: socket.roomCode,
     connected: false,

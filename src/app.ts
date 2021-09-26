@@ -1,17 +1,11 @@
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import { GameStatus, MiSocket } from './common/types/types';
-import { handlePlayerAction } from './handlers/gameHandler';
+import { MiClientSocket } from './common/types/types';
 import {
   beforeConnectionOrReconnection,
-  handleUserDisconnection,
-  joinRoom,
+  createOrJoinRoom,
 } from './handlers/userHandler';
-import {
-  logPlayerAction,
-  logUserConnection,
-  logUserDisconnection,
-} from './utils/logs';
+import { logUserConnection } from './utils/logs';
 import { InMemorySessionStore } from './utils/sessionStore';
 
 export function createApplication(httpServer: HttpServer): Server {
@@ -25,27 +19,26 @@ export function createApplication(httpServer: HttpServer): Server {
   const sessionStore = new InMemorySessionStore();
 
   // * middlewares
-  io.use((socket: MiSocket, next) => {
+  io.use((socket: MiClientSocket, next) => {
     beforeConnectionOrReconnection(socket, next, sessionStore);
   });
 
   // * once middlewares pass
-  io.on('connect', async (socket: MiSocket) => {
-    await joinRoom(io, socket, sessionStore);
+  io.on('connect', async (socket: MiClientSocket) => {
     logUserConnection(io, socket);
+    await createOrJoinRoom(io, socket, sessionStore);
 
-    socket.on('disconnect', (reason) => {
-      handleUserDisconnection(socket, sessionStore);
-      logUserDisconnection(reason);
-    });
-
-    socket.on(
-      'player action',
-      (sessionID: string, newGameStatus: GameStatus) => {
-        handlePlayerAction(socket, sessionStore, sessionID, newGameStatus);
-        logPlayerAction(socket, newGameStatus);
-      },
-    );
+    // socket.on('disconnect', (reason) => {
+    //   handleUserDisconnection(socket, sessionStore);
+    //   logUserDisconnection(reason);
+    // });
+    // socket.on(
+    //   'player action',
+    //   (sessionID: string, newGameStatus: GameStatus) => {
+    //     handlePlayerAction(socket, sessionStore, sessionID, newGameStatus);
+    //     logPlayerAction(socket, newGameStatus);
+    //   },
+    // );
   });
 
   return io;
