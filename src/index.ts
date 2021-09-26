@@ -3,9 +3,9 @@ import express from 'express';
 import { createServer } from 'http';
 import path from 'path';
 import { createApplication } from './app';
+import { log } from './common/constants';
 
 const port = 3000;
-const log = console.log;
 const hostname = '127.0.0.1';
 
 const app = express();

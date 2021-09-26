@@ -8,8 +8,9 @@ import {
 import {
   beforeConnectionOrReconnection,
   createOrJoinRoom,
+  handleUserDisconnection,
 } from './handlers/userHandler';
-import { logUserConnection } from './utils/logs';
+import { logUserConnection, logUserDisconnection } from './utils/logs';
 import { InMemorySessionStore } from './utils/sessionStore';
 
 export function createApplication(httpServer: HttpServer): Server {
@@ -35,7 +36,6 @@ export function createApplication(httpServer: HttpServer): Server {
     socket.on(
       'start game handshake',
       (sessionID: string, newGameStatus: GameStatus) => {
-        console.log('gameStatus start', newGameStatus);
         handleStartGameHandshake(
           socket,
           sessionStore,
@@ -58,10 +58,10 @@ export function createApplication(httpServer: HttpServer): Server {
       },
     );
 
-    // socket.on('disconnect', (reason) => {
-    //   handleUserDisconnection(socket, sessionStore);
-    //   logUserDisconnection(reason);
-    // });
+    socket.on('disconnect', (reason) => {
+      handleUserDisconnection(socket, sessionStore);
+      logUserDisconnection(reason);
+    });
     // socket.on(
     //   'player action',
     //   (sessionID: string, newGameStatus: GameStatus) => {

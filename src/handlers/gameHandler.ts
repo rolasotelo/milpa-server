@@ -41,7 +41,7 @@ export const handleStartGameHandshake = (
   }
 
   socket
-    .to(socket.roomCode)
+    .in(socket.roomCode)
     .emit(
       'start game handshake',
       sessionStore.findSession(sessionID)?.gameStatus,
