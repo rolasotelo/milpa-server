@@ -1,15 +1,21 @@
-import chalk from 'chalk';
-import crypto from 'crypto';
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import { MAX_PLAYERS } from './common/constants';
-import { MiRemoteSocket, MiSocket } from './common/types/types';
-import { Session } from './utils/sessionStore';
-
-const log = console.log;
+import { GameStatus, MiClientSocket } from './common/types/types';
+import {
+  handleEndOfHandshake,
+  handleEndUpdateMilpa,
+  handleStartGameHandshake,
+  handleStartUpdateMilpa,
+} from './handlers/gameHandler';
+import {
+  beforeConnectionOrReconnection,
+  createOrJoinRoom,
+  handleUserDisconnection,
+} from './handlers/userHandler';
+import { logUserConnection, logUserDisconnection } from './utils/logs';
+import { InMemorySessionStore } from './utils/sessionStore';
 
 export function createApplication(httpServer: HttpServer): Server {
-  // TODO create env for origin
   const io = new Server(httpServer, {
     cors: {
       origin: ['http://localhost:8080', 'http://127.0.0.1:5500'],
@@ -17,135 +23,66 @@ export function createApplication(httpServer: HttpServer): Server {
     },
   });
 
-  const randomId = () => crypto.randomBytes(8).toString('hex');
-  const { InMemorySessionStore } = require('./utils/sessionStore');
   const sessionStore = new InMemorySessionStore();
 
   // * middlewares
-  io.use((socket: MiSocket, next) => {
-    const sessionID = socket.handshake.auth.sessionID;
-    if (sessionID) {
-      // find existing session
-      const session: Session = sessionStore.findSession(sessionID);
-      if (session) {
-        socket.sessionID = sessionID;
-        socket.userID = session.userID;
-        socket.nickname = session.nickname;
-        socket.roomCode = session.roomCode;
-        log('si session found, sessionID:', sessionID);
-        log('roomcode', socket.roomCode);
-        return next();
-      }
-    }
-    const nickname = socket.handshake.auth.nickname;
-    if (!nickname) {
-      return next(new Error('invalid nickname'));
-    }
-    const roomCode = socket.handshake.query.gameCode;
-    if (!roomCode) {
-      return next(new Error('invalid gamecode'));
-    }
-    log('no session found, sessionID:', sessionID);
-    log('roomcode', roomCode);
-    socket.nickname = nickname;
-    socket.roomCode = roomCode;
-    socket.sessionID = randomId();
-    socket.userID = randomId();
-    next();
+  io.use((socket: MiClientSocket, next) => {
+    beforeConnectionOrReconnection(socket, next, sessionStore);
   });
 
   // * once middlewares pass
-  io.on('connect', async (socket: MiSocket) => {
-    // persist session
-    sessionStore.saveSession(socket.sessionID, {
-      userID: socket.userID,
-      nickname: socket.nickname,
-      roomCode: socket.roomCode,
-      connected: true,
-    });
+  io.on('connect', async (socket: MiClientSocket) => {
+    logUserConnection(io, socket);
+    await createOrJoinRoom(io, socket, sessionStore);
 
-    // emit session details
-    socket.emit('session', {
-      sessionID: socket.sessionID,
-      userID: socket.userID,
-      roomCode: socket.roomCode,
-    });
-
-    // + fetch existing users in room
-    const users = [];
-    const sockets: MiRemoteSocket[] = await io
-      .in(socket.roomCode)
-      .fetchSockets();
-    for (let skt of sockets) {
-      users.push({
-        userID: skt.userID,
-        nickname: skt.nickname,
-      });
-    }
-
-    if (sockets.length < MAX_PLAYERS) {
-      socket.join(socket.roomCode);
-
-      users.push({
-        userID: socket.userID,
-        nickname: socket.nickname,
-      });
-
-      socket
-        .to(socket.roomCode)
-        .emit(
-          'room join',
-          `${socket.userID} joined the room ${socket.roomCode}`,
+    socket.on(
+      'start game handshake',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleStartGameHandshake(
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
         );
-
-      socket.in(socket.roomCode).emit('user connected', {
-        userID: socket.userID,
-        nickname: socket.nickname,
-      });
-
-      socket.emit('users', users);
-
-      if (users.length === MAX_PLAYERS) {
-        io.to(socket.roomCode!).emit('start game');
-      }
-    } else {
-      socket.in(socket.roomCode).emit('connection attempted', {
-        userID: socket.userID,
-        nickname: socket.nickname,
-      });
-      socket.emit('room filled');
-    }
-
-    log(
-      chalk.whiteBright.bgBlack.bold(
-        socket.nickname,
-        'connected - userID:',
-        socket.userID,
-      ),
-      chalk.greenBright.bgBlack.bold('room: ', socket.roomCode),
+      },
     );
-    log('sessions', sessionStore.findAllSessions());
-    log(
-      chalk.blueBright.bgBlack.bold('total clients: ', io.engine.clientsCount),
+
+    socket.on(
+      'end of handshake',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleEndOfHandshake(
+          io,
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
+        );
+      },
     );
+
+    socket.on(
+      'start update milpa',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleStartUpdateMilpa(socket, sessionStore, sessionID, newGameStatus);
+      },
+    );
+
+    socket.on(
+      'end update milpa',
+      (sessionID: string, newGameStatus: GameStatus) => {
+        handleEndUpdateMilpa(
+          io,
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
+        );
+      },
+    );
+
     socket.on('disconnect', (reason) => {
-      log(chalk.redBright.bgBlack.bold('User disconected: ', reason));
-
-      socket.in(socket.roomCode).emit('player disconnected', {
-        userID: socket.userID,
-        nickname: socket.nickname,
-      });
-      sessionStore.saveSession(socket.sessionID, {
-        userID: socket.userID,
-        nickname: socket.nickname,
-        roomCode: socket.roomCode,
-        connected: false,
-      });
-      log('sessions', sessionStore.findAllSessions());
-    });
-    socket.on('chat message', (msg) => {
-      log(chalk.blue.bgBlack('Message:') + chalk.gray.bgBlack(msg));
-      io.emit('chat message', msg);
+      handleUserDisconnection(socket, sessionStore);
+      logUserDisconnection(reason);
     });
   });
 
