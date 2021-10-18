@@ -25,6 +25,6 @@ export const logPlayerAction = (
 ) => {
   log(
     chalk.blue.bgBlack(`Player turn (${socket.userID}):`) +
-      chalk.gray.bgBlack(newGameStatus.milpas),
+      chalk.gray.bgBlack(newGameStatus.boards[0]),
   );
 };

@@ -1,8 +1,8 @@
 import { Server } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { Event } from 'src/common/enums';
-import { GameStatus, MiClientSocket } from 'src/common/types/types';
-import { InMemorySessionStore } from 'src/utils/sessionStore';
+import { Event } from '../common/enums';
+import { GameStatus, MiClientSocket } from '../common/types/types';
+import { InMemorySessionStore } from '../utils/sessionStore';
 
 export const handleStartGameHandshake = (
   socket: MiClientSocket,

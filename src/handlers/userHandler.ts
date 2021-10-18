@@ -124,9 +124,7 @@ export const createOrJoinRoom = async (
     io.to(socket.roomCode!).emit(Event.Users_In_Room, usersInRoom);
 
     if (usersInRoom.length === MAX_PLAYERS) {
-      socket
-        .in(socket.roomCode)
-        .emit(Event.Start_Game, socket.sessionID, usersInRoom);
+      socket.in(socket.roomCode).emit(Event.Start_Game, usersInRoom);
     }
   } else {
     socket.in(socket.roomCode).emit(Event.Connection_Attempted, {
