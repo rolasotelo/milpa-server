@@ -10,24 +10,27 @@ export interface MiClientSocket extends Socket {
 }
 
 export interface MiServerSocket extends RemoteSocket<DefaultEventsMap> {
-  nickname?: string;
-  sessionID?: string;
-  userID?: string;
-  gameStatus?: GameStatus;
+  nickname: string;
+  sessionID: string;
+  userID: string;
+  roomCode: string;
+  gameStatus: GameStatus;
 }
 
 export interface GameStatus {
-  playerTurn: string;
+  playerInTurnID: string;
+  currentTurn: number;
+  currentStage: number;
   score: {
     [k: string]: number;
   };
-  milpas: {
-    [k: string]: Milpa;
+  boards: {
+    [k: string]: Readonly<Board>;
   };
-  cropsDeck: Crop[];
-  goodsDeck: Good[];
-  cropsHand: Crop[];
-  goodsHand: Good[];
+  cropsDeck: ReadonlyArray<Crop>;
+  goodsDeck: ReadonlyArray<Good>;
+  cropsHand: ReadonlyArray<Crop>;
+  goodsHand: ReadonlyArray<Good>;
 }
 
 export interface Session {
@@ -46,26 +49,36 @@ export interface IO
   extends Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap> {}
 
 // ! Copied form Client
-export type CropAndGoodSlots = (Crop | Good | undefined)[][];
-
-export interface Milpa {
-  goods: CropAndGoodSlots;
-  crops: CropAndGoodSlots;
+export interface BoardSlot {
+  type: string | undefined;
+  row: number | undefined;
+  column: number | undefined;
+  cards: ReadonlyArray<AnyCard>;
 }
+
+export type Board = {
+  milpa: Readonly<Milpa>;
+  edges: Readonly<Edges>;
+};
+export type Milpa = BoardSlot[][];
+
+export type Edges = BoardSlot[][];
+
+export type AnyCard = Crop | Good | Empty;
 
 export interface Crop extends Card {}
 
 export interface Good extends Card {}
+export interface Empty extends Card {}
 
 interface Card {
-  id: string;
-  type: 'crop' | 'good';
+  type: string;
   name: string;
   icon: string;
   description: string;
   resume: string;
   rules: string;
-  modifier?: string[];
+  modifier: string[];
   canInteractWith: {
     ownEmptyMilpaSlots: boolean;
     ownFilledMilpaSlots: boolean | string[];
@@ -77,3 +90,12 @@ interface Card {
     othersFilledEdgeSlots: boolean | string[];
   };
 }
+
+export type Player = {
+  userID: string;
+  sessionID: string;
+  roomCode: string;
+  nickname: string;
+  connected: boolean;
+  gameStatus: GameStatus;
+};

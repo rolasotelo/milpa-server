@@ -1,5 +1,6 @@
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
+import { Event } from './common/enums';
 import { GameStatus, MiClientSocket } from './common/types/types';
 import {
   handleEndOfHandshake,
@@ -36,7 +37,7 @@ export function createApplication(httpServer: HttpServer): Server {
     await createOrJoinRoom(io, socket, sessionStore);
 
     socket.on(
-      'start game handshake',
+      Event.Start_Game_Handshake,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleStartGameHandshake(
           socket,
@@ -48,7 +49,7 @@ export function createApplication(httpServer: HttpServer): Server {
     );
 
     socket.on(
-      'end of handshake',
+      Event.End_Of_Handshake,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleEndOfHandshake(
           io,
@@ -61,14 +62,14 @@ export function createApplication(httpServer: HttpServer): Server {
     );
 
     socket.on(
-      'start update milpa',
+      Event.Start_Update_Board,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleStartUpdateMilpa(socket, sessionStore, sessionID, newGameStatus);
       },
     );
 
     socket.on(
-      'end update milpa',
+      Event.End_Update_Board,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleEndUpdateMilpa(
           io,
@@ -80,7 +81,7 @@ export function createApplication(httpServer: HttpServer): Server {
       },
     );
 
-    socket.on('disconnect', (reason) => {
+    socket.on(Event.Disconnection, (reason) => {
       handleUserDisconnection(socket, sessionStore);
       logUserDisconnection(reason);
     });

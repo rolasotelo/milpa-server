@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { Event } from 'src/common/enums';
 import { GameStatus, MiClientSocket } from 'src/common/types/types';
 import { InMemorySessionStore } from 'src/utils/sessionStore';
 
@@ -22,7 +23,7 @@ export const handleStartGameHandshake = (
   socket
     .in(socket.roomCode)
     .emit(
-      'start game handshake',
+      Event.Start_Game_Handshake,
       sessionStore.findSession(sessionID)?.gameStatus,
     );
 };
@@ -44,7 +45,7 @@ export const handleEndOfHandshake = (
     });
   }
 
-  io.to(socket.roomCode!).emit('ok start game');
+  io.to(socket.roomCode!).emit(Event.Ok_Start_Game);
 };
 
 export const handleStartUpdateMilpa = (
@@ -66,7 +67,7 @@ export const handleStartUpdateMilpa = (
   socket
     .in(socket.roomCode)
     .emit(
-      'start update milpa',
+      Event.Start_Update_Board,
       sessionStore.findSession(sessionID)?.gameStatus,
     );
 };

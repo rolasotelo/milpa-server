@@ -1,9 +1,11 @@
 import { log, MAX_PLAYERS, randomID } from '../common/constants';
+import { Event } from '../common/enums';
 import {
   ExtendedError,
   IO,
-  MiServerSocket,
   MiClientSocket,
+  MiServerSocket,
+  Player,
 } from '../common/types/types';
 import { InMemorySessionStore } from '../utils/sessionStore';
 
@@ -47,22 +49,24 @@ export const createOrJoinRoom = async (
   socket: MiClientSocket,
   sessionStore: InMemorySessionStore,
 ) => {
-  const usersInRoom = [];
-  const socketsAlreadyInRoom: MiServerSocket[] = await io
+  const usersInRoom: Player[] = [];
+  const socketsAlreadyInRoom: MiServerSocket[] = (await (io
     .in(socket.roomCode)
-    .fetchSockets();
+    .fetchSockets() as unknown)) as MiServerSocket[];
 
   let socketAlreadyInRoom = false;
 
   for (let oldSocket of socketsAlreadyInRoom) {
     if (socket.userID === oldSocket.userID) {
-      socketAlreadyInRoom = !socketAlreadyInRoom;
+      socketAlreadyInRoom = true;
     }
     usersInRoom.push({
       userID: oldSocket.userID,
       nickname: oldSocket.nickname,
       gameStatus: oldSocket.gameStatus,
       connected: true,
+      sessionID: oldSocket.sessionID,
+      roomCode: socket.roomCode,
     });
   }
 
@@ -77,7 +81,7 @@ export const createOrJoinRoom = async (
     });
 
     // emit session details
-    socket.emit('session saved', {
+    socket.emit(Event.Session_Saved, {
       sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
@@ -86,7 +90,7 @@ export const createOrJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    socket.to(socket.roomCode).emit('player joined the room', {
+    socket.to(socket.roomCode).emit(Event.Player_Joined_The_Room, {
       sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
@@ -95,7 +99,7 @@ export const createOrJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    socket.in(socket.roomCode).emit('user connected', {
+    socket.in(socket.roomCode).emit(Event.User_Connected, {
       sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
@@ -107,27 +111,29 @@ export const createOrJoinRoom = async (
     if (!socketAlreadyInRoom) {
       socket.join(socket.roomCode);
       usersInRoom.push({
-        userID: socket.userID,
+        userID: socket.userID!,
         nickname: socket.nickname,
-        gameStatus: socket.gameStatus,
+        gameStatus: socket.gameStatus!,
         connected: true,
+        roomCode: socket.roomCode,
+        sessionID: socket.sessionID!,
       });
     }
 
     // + a todos
-    io.to(socket.roomCode!).emit('users in room', usersInRoom);
+    io.to(socket.roomCode!).emit(Event.Users_In_Room, usersInRoom);
 
     if (usersInRoom.length === MAX_PLAYERS) {
       socket
         .in(socket.roomCode)
-        .emit('start game', socket.sessionID, usersInRoom);
+        .emit(Event.Start_Game, socket.sessionID, usersInRoom);
     }
   } else {
-    socket.in(socket.roomCode).emit('connection attempted', {
+    socket.in(socket.roomCode).emit(Event.Connection_Attempted, {
       userID: socket.userID,
       nickname: socket.nickname,
     });
-    socket.emit('room filled');
+    socket.emit(Event.Room_Filled);
   }
 };
 
