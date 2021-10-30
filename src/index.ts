@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import path from 'path';
 import { createApplication } from './app';
 import { log } from './common/constants';
+import { instrument } from '@socket.io/admin-ui';
 
 const port = 3000;
 const hostname = '127.0.0.1';
@@ -15,7 +16,11 @@ app.get('/', (_, res) => {
   res.sendFile(path.join(__dirname, '../src/index.html'));
 });
 
-createApplication(httpServer);
+const io = createApplication(httpServer);
+
+instrument(io, {
+  auth: false,
+});
 
 httpServer.listen(port, hostname, () => {
   log(
