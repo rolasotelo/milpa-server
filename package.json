@@ -13,7 +13,10 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "dev": "nodemon dist/index.js"
+    "dev": "nodemon dist/index.js",
+    "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'docs(📓): Update CHANGELOG.md' && npm version major && git push --tags",
+    "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'docs(📓): Update CHANGELOG.md' && npm version minor && git push --tags",
+    "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'docs(📓): Update CHANGELOG.md' && npm version patch && git push --tags"
   },
   "dependencies": {
     "@socket.io/admin-ui": "^0.2.0",
@@ -29,6 +32,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "~8.3.0",
     "eslint-plugin-import": "^2.25.4",
+    "generate-changelog": "^1.8.0",
     "nodemon": "~2.0.7",
     "prettier": "~2.3.1",
     "typescript": "^4.5.5"
