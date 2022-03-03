@@ -1,7 +1,7 @@
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
-import { Event } from './common/enums';
-import { GameStatus, MiClientSocket } from './common/types/types';
+import { MatchEvent } from './common/enums';
+import { GameStatus, MiClientSocket } from './common/types';
 import {
   handleEndOfHandshake,
   handleEndUpdateMilpa,
@@ -14,9 +14,9 @@ import {
   handleUserDisconnection,
 } from './handlers/userHandler';
 import { logUserConnection, logUserDisconnection } from './utils/logs';
-import { InMemorySessionStore } from './utils/sessionStore';
+import { InMemorySessionStore } from './utils/InMemorySessionStore';
 
-export function createApplication(httpServer: HttpServer): Server {
+export default function createApplication(httpServer: HttpServer): Server {
   const io = new Server(httpServer, {
     cors: {
       origin: [
@@ -41,7 +41,7 @@ export function createApplication(httpServer: HttpServer): Server {
     await createOrJoinRoom(io, socket, sessionStore);
 
     socket.on(
-      Event.Start_Game_Handshake,
+      MatchEvent.Start_Game_Handshake,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleStartGameHandshake(
           socket,
@@ -53,7 +53,7 @@ export function createApplication(httpServer: HttpServer): Server {
     );
 
     socket.on(
-      Event.End_Of_Handshake,
+      MatchEvent.End_Of_Handshake,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleEndOfHandshake(
           io,
@@ -66,14 +66,14 @@ export function createApplication(httpServer: HttpServer): Server {
     );
 
     socket.on(
-      Event.Start_Update_Board,
+      MatchEvent.Start_Update_Board,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleStartUpdateMilpa(socket, sessionStore, sessionID, newGameStatus);
       },
     );
 
     socket.on(
-      Event.End_Update_Board,
+      MatchEvent.End_Update_Board,
       (sessionID: string, newGameStatus: GameStatus) => {
         handleEndUpdateMilpa(
           io,
@@ -85,7 +85,7 @@ export function createApplication(httpServer: HttpServer): Server {
       },
     );
 
-    socket.on(Event.Disconnection, (reason) => {
+    socket.on(MatchEvent.Disconnection, (reason) => {
       handleUserDisconnection(socket, sessionStore);
       logUserDisconnection(reason);
     });

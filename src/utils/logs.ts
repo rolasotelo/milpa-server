@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { log } from '../common/constants';
-import { GameStatus, IO, MiClientSocket } from '../common/types/types';
+import { GameStatus, IO, MiClientSocket } from '../common/types';
 
 export const logUserConnection = (io: IO, socket: MiClientSocket) => {
   log(

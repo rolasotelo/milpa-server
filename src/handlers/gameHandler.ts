@@ -1,8 +1,9 @@
+/* eslint-disable no-param-reassign */
 import { Server } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { Event } from '../common/enums';
-import { GameStatus, MiClientSocket } from '../common/types/types';
-import { InMemorySessionStore } from '../utils/sessionStore';
+import { MatchEvent } from '../common/enums';
+import { GameStatus, MiClientSocket } from '../common/types';
+import InMemorySessionStore from '../utils/InMemorySessionStore';
 
 export const handleStartGameHandshake = (
   socket: MiClientSocket,
@@ -23,7 +24,7 @@ export const handleStartGameHandshake = (
   socket
     .in(socket.roomCode)
     .emit(
-      Event.Start_Game_Handshake,
+      MatchEvent.Start_Game_Handshake,
       sessionStore.findSession(sessionID)?.gameStatus,
     );
 };
@@ -45,7 +46,7 @@ export const handleEndOfHandshake = (
     });
   }
 
-  io.to(socket.roomCode!).emit(Event.Ok_Start_Game);
+  io.to(socket.roomCode!).emit(MatchEvent.Ok_Start_Game);
 };
 
 export const handleStartUpdateMilpa = (
@@ -67,7 +68,7 @@ export const handleStartUpdateMilpa = (
   socket
     .in(socket.roomCode)
     .emit(
-      Event.Start_Update_Board,
+      MatchEvent.Start_Update_Board,
       sessionStore.findSession(sessionID)?.gameStatus,
     );
 };

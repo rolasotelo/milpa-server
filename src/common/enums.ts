@@ -1,4 +1,4 @@
-export enum Event {
+enum MatchEvent {
   Connection_Error = 'connect_error',
   Session_Saved = 'session saved',
   Users_In_Room = 'users in room',
@@ -16,3 +16,6 @@ export enum Event {
   Ok_Update_Milpa = 'ok update milpa',
   Disconnection = 'disconnect',
 }
+
+// eslint-disable-next-line import/prefer-default-export
+export { MatchEvent };

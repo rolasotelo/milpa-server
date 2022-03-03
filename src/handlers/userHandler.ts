@@ -1,20 +1,22 @@
+/* eslint-disable no-param-reassign */
 import { log, MAX_PLAYERS, randomID } from '../common/constants';
-import { Event } from '../common/enums';
+import { MatchEvent } from '../common/enums';
 import {
   ExtendedError,
   IO,
   MiClientSocket,
   MiServerSocket,
   Player,
-} from '../common/types/types';
-import { InMemorySessionStore } from '../utils/sessionStore';
+} from '../common/types';
+import InMemorySessionStore from '../utils/InMemorySessionStore';
 
 export const beforeConnectionOrReconnection = (
   socket: MiClientSocket,
   next: (err?: ExtendedError | undefined) => void,
   sessionStore: InMemorySessionStore,
+  // eslint-disable-next-line consistent-return
 ) => {
-  const sessionID = socket.handshake.auth.sessionID;
+  const { sessionID } = socket.handshake.auth;
   if (sessionID) {
     const session = sessionStore.findSession(sessionID);
     if (session) {
@@ -27,7 +29,7 @@ export const beforeConnectionOrReconnection = (
       return next();
     }
   }
-  const nickname = socket.handshake.auth.nickname;
+  const { nickname } = socket.handshake.auth;
   if (!nickname) {
     return next(new Error('invalid nickname'));
   }
@@ -50,13 +52,14 @@ export const createOrJoinRoom = async (
   sessionStore: InMemorySessionStore,
 ) => {
   const usersInRoom: Player[] = [];
-  const socketsAlreadyInRoom: MiServerSocket[] = (await (io
+  const socketsAlreadyInRoom: MiServerSocket[] = (await ((await io
     .in(socket.roomCode)
-    .fetchSockets() as unknown)) as MiServerSocket[];
+    .fetchSockets()) as unknown)) as MiServerSocket[];
 
   let socketAlreadyInRoom = false;
 
-  for (let oldSocket of socketsAlreadyInRoom) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const oldSocket of socketsAlreadyInRoom) {
     if (socket.userID === oldSocket.userID) {
       socketAlreadyInRoom = true;
     }
@@ -81,7 +84,7 @@ export const createOrJoinRoom = async (
     });
 
     // emit session details
-    socket.emit(Event.Session_Saved, {
+    socket.emit(MatchEvent.Session_Saved, {
       sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
@@ -90,7 +93,7 @@ export const createOrJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    socket.to(socket.roomCode).emit(Event.Player_Joined_The_Room, {
+    socket.to(socket.roomCode).emit(MatchEvent.Player_Joined_The_Room, {
       sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
@@ -99,7 +102,7 @@ export const createOrJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    socket.in(socket.roomCode).emit(Event.User_Connected, {
+    socket.in(socket.roomCode).emit(MatchEvent.User_Connected, {
       sessionID: socket.sessionID,
       userID: socket.userID,
       nickname: socket.nickname,
@@ -121,17 +124,17 @@ export const createOrJoinRoom = async (
     }
 
     // + a todos
-    io.to(socket.roomCode!).emit(Event.Users_In_Room, usersInRoom);
+    io.to(socket.roomCode!).emit(MatchEvent.Users_In_Room, usersInRoom);
 
     if (usersInRoom.length === MAX_PLAYERS) {
-      socket.in(socket.roomCode).emit(Event.Start_Game, usersInRoom);
+      socket.in(socket.roomCode).emit(MatchEvent.Start_Game, usersInRoom);
     }
   } else {
-    socket.in(socket.roomCode).emit(Event.Connection_Attempted, {
+    socket.in(socket.roomCode).emit(MatchEvent.Connection_Attempted, {
       userID: socket.userID,
       nickname: socket.nickname,
     });
-    socket.emit(Event.Room_Filled);
+    socket.emit(MatchEvent.Room_Filled);
   }
 };
 
