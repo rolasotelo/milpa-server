@@ -1,0 +1,12 @@
+name: Fun comment 🥸
+on:
+  pull_request:
+    types: [opened]
+jobs:
+  fun-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add comment 🤡
+        uses: karancode/funghaction@42
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
