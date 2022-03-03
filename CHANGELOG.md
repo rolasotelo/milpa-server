@@ -1,26 +1,56 @@
-# Milpa Server
+#### 1.0.1 (2022-03-03)
 
-Changelog for [la-milpa-server](https://github.com/rolasotelo/la-milpa-server)
+##### Chores
 
-## Issue [#1](https://github.com/rolasotelo/la-milpa-server/issues/1)
+* **🛠/config⚙️ :**  Configure ESlint with Airbnb and add Prettier (decbdf2b)
 
-### Persist players and handle players leaving the game.
+##### Continuous Integration
 
-    As it is now, a new Socket ID is generated upon reconnection, so every time a user gets disconnected and reconnects, it will get a new user ID.
+* **🏗:**
+  *  Add workflows (0ba33f63)
+  *  Add workflows (c7aef3de)
 
-    Also it is needed to start a timer when players leave for then automatically closing the room.
+##### Other Changes
 
-- I plan to check on https://socket.io/get-started/private-messaging-part-2/ to solve the 'persist players' issue. (rola@hey.com)
-- Session storage is initially implemented in memory. (rola@hey.com)
-- Maybe a timer to close a room and player sessions after player disconnections will be needed, because now you can always come back to the room. (rola@hey.com)
-- A logical follow up to this issue will probably be working on the match workflow and the messages that will be send during it. (rola@hey.com)
+*  socketio admin ui (d48df53e)
+*  Compilation errors (1764cad7)
+*  add enum of events and update types to accomodate client changes (7a730396)
+*  Merge pull request #4 from rolasotelo/ISSUE-3 (b24ee5ce)
+*  Ready to rock (f75393b5)
+*  Update Milpa handshake (b9a56d8e)
+*  User being able to fill its own room (5f838d5e)
+*  Start  game workflow completed. Problem was on Map not being suppported in args for events inr socket io (3f25874b)
+*  handle disconnection missing (454766e5)
+*  Recreating events handlers up to emit users in room (dc7af1ec)
+*  Update game Status type (32a6d040)
+*  Create handlers and log functions (ec1047ec)
+*  Update gameStatus not only in session but in socket too (fe70a6f3)
+*  Add ~ to package versions (ba0620c9)
+*  Update package.json (e7afdb6f)
+*  Listen to 'player action' event (d3ed0821)
+*  Add game status field to in memory stored session (4f6c1986)
+*  First log for #3 (f406ab69)
+*  Last comment to #1 (11dd5c56)
+*  Update connection status in session on player disconnection (c0dfe3f7)
+*  Add roomCode to session plus Add logs (f267da73)
+*  Persist player session (0b5a7f75)
+*  In memory session store class (46205c2f)
+*  Create changelog file (e47f9435)
+*  Issue #1 (8ed64321)
+*  emit start game on MAX_PLAYERS (a57a8f41)
+*  Join room only with one or less players inside (910e5ab7)
+*  Add comments for clarification (90ec659c)
+*  Notify existing users (ee7be54b)
+*  Fetch existing users when connecting (80968fa9)
+*  Move middleware out of connect (80b237d1)
+*  Add middleware that checks for nickname (7dda03ba)
+*  Log nickname in sockets (408c5c85)
+*  Add new connections to room after game code (1062bc2d)
+*  Enable cors (770d5e43)
+*  Update log messages (62460676)
+*  Create basic socket.io app (4a4b6816)
+*  Add ts config and script using nodemon (75899587)
+*  Add eslint and prettier configuration (aa5248a3)
+*  Add express hello world app (7e59faff)
+*  inital commit and README (8f6f1d7b)
 
-## Issue [#3](https://github.com/rolasotelo/la-milpa-server/issues/3)
-
-### Create match workflow
-
-    Create match workflow and design messages and data types of the information that will be shared.
-
-- I plan to add the 'game status' (Not sure yet how i will call it) to the session stored for every player, it will probably be an object formed with at least the information of both players milpas, the current score for each one and who's turn it is. Then everytime a player in client takes a action, an event is recieved that updates the 'game status' of all players in the room. (rola@hey.com)
-- I refactor the project to make it cleaner and easier to read, with the helpof handlers and logging functions. I followed what was suggested here https://socket.io/docs/v4/server-application-structure/#registering-event-handlers (rola@hey.com)
-- I was quite scared at the beginning, because this will be the first project that I do completely alone (ok, obviously I have all the internet to help me, but you understand), without following any tutorial or stuff, and I didn't know if I was gonna be able to understand socket.io and how to handle conections and design handshakes, but I'm actually really happy of how everything has turned out. It's been a lot of work but it is worth it. (rola@hey.com)
