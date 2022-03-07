@@ -12,6 +12,7 @@ enum MatchEvent {
   End_Update_Board = 'end update board',
   Player_Joined_The_Room = 'player joined the room',
   User_Connected = 'user connected',
+  New_User_Connected = 'new user connected',
   Connection_Attempted = 'connection attempted',
   Ok_Update_Milpa = 'ok update milpa',
   Disconnection = 'disconnect',

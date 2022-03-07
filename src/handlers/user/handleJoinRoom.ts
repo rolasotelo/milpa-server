@@ -9,29 +9,29 @@ const handleJoinRoom = async (
   sessionStore: InMemorySessionStore,
 ) => {
   const usersInRoom = [];
+
   const socketsAlreadyInRoom: MiServerSocket[] = (await ((await io
     .in(socket.roomCode)
     .fetchSockets()) as unknown)) as MiServerSocket[];
 
-  let socketAlreadyInRoom = false;
+  let isAlreadyInRoom = false;
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const oldSocket of socketsAlreadyInRoom) {
-    if (socket.userID === oldSocket.userID) {
-      socketAlreadyInRoom = true;
+  for (const socketInRoom of socketsAlreadyInRoom) {
+    if (socket.userID === socketInRoom.userID) {
+      isAlreadyInRoom = true;
     }
     usersInRoom.push({
-      userID: oldSocket.userID,
-      nickname: oldSocket.nickname,
-      gameStatus: oldSocket.gameStatus,
+      userID: socketInRoom.userID,
+      nickname: socketInRoom.nickname,
+      gameStatus: socketInRoom.gameStatus,
       connected: true,
-      sessionID: oldSocket.sessionID,
+      sessionID: socketInRoom.sessionID,
       roomCode: socket.roomCode,
     });
   }
 
   if (socketsAlreadyInRoom.length < MAX_PLAYERS) {
-    // persist session
     sessionStore.saveSession(socket.sessionID!, {
       userID: socket.userID!,
       nickname: socket.nickname,
@@ -40,7 +40,6 @@ const handleJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    // emit session details
     socket.emit(MatchEvent.Session_Saved, {
       sessionID: socket.sessionID,
       userID: socket.userID,
@@ -50,14 +49,26 @@ const handleJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    socket.to(socket.roomCode).emit(MatchEvent.Player_Joined_The_Room, {
-      sessionID: socket.sessionID,
-      userID: socket.userID,
-      nickname: socket.nickname,
-      roomCode: socket.roomCode,
-      connected: true,
-      gameStatus: socket.gameStatus,
-    });
+    if (!isAlreadyInRoom) {
+      socket.join(socket.roomCode);
+      usersInRoom.push({
+        userID: socket.userID!,
+        nickname: socket.nickname,
+        gameStatus: socket.gameStatus!,
+        connected: true,
+        roomCode: socket.roomCode,
+        sessionID: socket.sessionID!,
+      });
+
+      socket.in(socket.roomCode).emit(MatchEvent.New_User_Connected, {
+        sessionID: socket.sessionID,
+        userID: socket.userID,
+        nickname: socket.nickname,
+        roomCode: socket.roomCode,
+        connected: true,
+        gameStatus: socket.gameStatus,
+      });
+    }
 
     socket.in(socket.roomCode).emit(MatchEvent.User_Connected, {
       sessionID: socket.sessionID,
@@ -68,19 +79,6 @@ const handleJoinRoom = async (
       gameStatus: socket.gameStatus,
     });
 
-    if (!socketAlreadyInRoom) {
-      socket.join(socket.roomCode);
-      usersInRoom.push({
-        userID: socket.userID!,
-        nickname: socket.nickname,
-        gameStatus: socket.gameStatus!,
-        connected: true,
-        roomCode: socket.roomCode,
-        sessionID: socket.sessionID!,
-      });
-    }
-
-    // + a todos
     io.to(socket.roomCode!).emit(MatchEvent.Users_In_Room, usersInRoom);
 
     if (usersInRoom.length === MAX_PLAYERS) {
