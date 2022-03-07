@@ -1,29 +1,23 @@
 import { Server as HttpServer } from 'http';
 import { Server } from 'socket.io';
 import { MatchEvent } from './common/enums';
-import { GameStatus, MiClientSocket } from './common/types';
-import {
-  handleEndOfHandshake,
-  handleEndUpdateMilpa,
-  handleStartGameHandshake,
-  handleStartUpdateMilpa,
-} from './handlers/gameHandler';
-import {
-  beforeConnectionOrReconnection,
-  createOrJoinRoom,
-  handleUserDisconnection,
-} from './handlers/userHandler';
+import { GameStatus, MiClientSocket } from './common/interfaces';
 import { logUserConnection, logUserDisconnection } from './utils/logs';
-import { InMemorySessionStore } from './utils/InMemorySessionStore';
+import InMemorySessionStore from './utils/InMemorySessionStore';
+import ALLOWED_ORIGINS from './common/allowedOrigins';
+import {
+  handleConnection,
+  handleFinishGameStatusUpdate,
+  handleFinishHandshake,
+  handleStartGameStatusUpdate,
+  handleStartHandshake,
+} from './handlers/game';
+import { handleDisconnection, handleJoinRoom } from './handlers/user';
 
 export default function createApplication(httpServer: HttpServer): Server {
   const io = new Server(httpServer, {
     cors: {
-      origin: [
-        'http://localhost:8080',
-        'http://127.0.0.1:5500',
-        'https://admin.socket.io',
-      ],
+      origin: ALLOWED_ORIGINS,
       methods: ['GET', 'POST'],
     },
   });
@@ -32,30 +26,25 @@ export default function createApplication(httpServer: HttpServer): Server {
 
   // * middlewares
   io.use((socket: MiClientSocket, next) => {
-    beforeConnectionOrReconnection(socket, next, sessionStore);
+    handleConnection(socket, next, sessionStore);
   });
 
   // * once middlewares pass
   io.on('connect', async (socket: MiClientSocket) => {
     logUserConnection(io, socket);
-    await createOrJoinRoom(io, socket, sessionStore);
+    await handleJoinRoom(io, socket, sessionStore);
 
     socket.on(
       MatchEvent.Start_Game_Handshake,
       (sessionID: string, newGameStatus: GameStatus) => {
-        handleStartGameHandshake(
-          socket,
-          sessionStore,
-          sessionID,
-          newGameStatus,
-        );
+        handleStartHandshake(socket, sessionStore, sessionID, newGameStatus);
       },
     );
 
     socket.on(
       MatchEvent.End_Of_Handshake,
       (sessionID: string, newGameStatus: GameStatus) => {
-        handleEndOfHandshake(
+        handleFinishHandshake(
           io,
           socket,
           sessionStore,
@@ -68,14 +57,19 @@ export default function createApplication(httpServer: HttpServer): Server {
     socket.on(
       MatchEvent.Start_Update_Board,
       (sessionID: string, newGameStatus: GameStatus) => {
-        handleStartUpdateMilpa(socket, sessionStore, sessionID, newGameStatus);
+        handleStartGameStatusUpdate(
+          socket,
+          sessionStore,
+          sessionID,
+          newGameStatus,
+        );
       },
     );
 
     socket.on(
       MatchEvent.End_Update_Board,
       (sessionID: string, newGameStatus: GameStatus) => {
-        handleEndUpdateMilpa(
+        handleFinishGameStatusUpdate(
           io,
           socket,
           sessionStore,
@@ -86,7 +80,7 @@ export default function createApplication(httpServer: HttpServer): Server {
     );
 
     socket.on(MatchEvent.Disconnection, (reason) => {
-      handleUserDisconnection(socket, sessionStore);
+      handleDisconnection(socket, sessionStore);
       logUserDisconnection(reason);
     });
   });

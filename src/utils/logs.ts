@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { log } from '../common/constants';
-import { GameStatus, IO, MiClientSocket } from '../common/types';
+import { IO, MiClientSocket } from '../common/interfaces';
 
 export const logUserConnection = (io: IO, socket: MiClientSocket) => {
   log(
@@ -17,14 +17,4 @@ export const logUserConnection = (io: IO, socket: MiClientSocket) => {
 
 export const logUserDisconnection = (reason: string) => {
   log(chalk.redBright.bgBlack.bold('User disconected: ', reason));
-};
-
-export const logPlayerAction = (
-  socket: MiClientSocket,
-  newGameStatus: GameStatus,
-) => {
-  log(
-    chalk.blue.bgBlack(`Player turn (${socket.userID}):`) +
-      chalk.gray.bgBlack(newGameStatus.boards[0]),
-  );
 };

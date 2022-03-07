@@ -1,4 +1,4 @@
-import { Session } from 'src/common/types';
+import { Session } from 'src/common/interfaces';
 
 export default class InMemorySessionStore {
   sessions: Map<string, Session>;
