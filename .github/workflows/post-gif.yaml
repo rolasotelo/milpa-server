@@ -1,15 +1,15 @@
-name: Comment GIF 🙈
+name: Comment GIF 🤡
 on:
   issues:
-    types: [opened, edited]
+    types: [opened]
   pull_request:
-    types: [opened, edited]
+    types: [opened]
   issue_comment:
-    types: [created, edited]
+    types: [created]
 
 jobs:
   giphy-generator:
-    name: GIPHY Generator 🙉
+    name: Comment GIF after /giphy command 🤡
     runs-on: ubuntu-latest
     steps:
       - name: GIPHY Generator
