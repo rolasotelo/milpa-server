@@ -6,7 +6,7 @@ import createApplication from './app';
 import { log } from './common/constants';
 
 const port = 3000;
-const hostname = '127.0.0.1';
+const hostname = '0.0.0.0';
 
 const app = express();
 const httpServer = createServer(app);
