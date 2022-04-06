@@ -12,10 +12,6 @@ This repository contains a SocketIO server orchestrating game rooms and matches 
 
 ### Here is a working live demo : [milpa.online](https://milpa.online) (WIP 🚧).
 
-## Repo diagram 📈
-
-![diagram](./diagram.svg)
-
 ---
 
 Made with 🫀 by Rolando Sotelo. Contact me at rola@hey.com
