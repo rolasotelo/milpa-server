@@ -1,0 +1,11 @@
+name: PR workflow 👩🏽‍🌾👨🏼‍💻
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  labeler:
+    name: Labeler
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fuxingloh/multi-labeler@v1
