@@ -21,10 +21,7 @@ const handleStartHandshake = (
 
   socket
     .in(socket.roomCode)
-    .emit(
-      MatchEvent.Start_Game_Handshake,
-      sessionStore.findSession(sessionID)?.gameStatus,
-    );
+    .emit(MatchEvent.Start_Game_Handshake, newGameStatus);
 };
 
 export default handleStartHandshake;
