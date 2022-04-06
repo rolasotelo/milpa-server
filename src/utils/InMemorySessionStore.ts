@@ -1,15 +1,9 @@
-import { Session } from 'src/common/types/types';
+import { Session } from 'src/common/interfaces';
 
-class SessionStore {
-  findSession(_id: string) {}
-  saveSession(_id: string, _session: Session) {}
-  findAllSessions() {}
-}
-
-export class InMemorySessionStore extends SessionStore {
+export default class InMemorySessionStore {
   sessions: Map<string, Session>;
+
   constructor() {
-    super();
     this.sessions = new Map<string, Session>();
   }
 
