@@ -1,3 +1,3 @@
-const ALLOWED_ORIGINS = ['https://milpa.online','http://localhost:8080'];
+const ALLOWED_ORIGINS = ['https://milpa.online'];
 
 export default ALLOWED_ORIGINS;
