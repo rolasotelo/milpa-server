@@ -1,44 +1,45 @@
-name: PR workflow 🪢👨🏼‍💻
+#              _.-````'-,_
+#    _,.,_ ,-'`           `'-.,_
+#  /)     (\                   '``-.
+# ((      ) )                      `\
+#  \)    (_/                        )\
+#   |       /)           '    ,'    / \
+#   `\    ^'            '     (    /  ))
+#     |      _/\ ,     /    ,,`\   (  "`
+#      \Y,   |  \  \  | ````| / \_ \
+#        `)_/    \  \  )    ( >  ( >
+#                 \( \(     |/   |/
+#     mic & dwb  /_(/_(    /_(  /_(
+---
+name: Label checker
 on:
   pull_request:
     types:
-      - opened
-      - edited
-      - synchronize
       - ready_for_review
-      - reopened
-      - labeled
-      - unlabeled
+      - review_requested
+      - opened
+      - synchronize
+  workflow_dispatch:
 
 jobs:
   labeler:
-    name: Label Police 🏷👮🏻‍♂️
+    name: Label Police 👮🏻‍♂️ 🏷
     runs-on: ubuntu-latest
     steps:
-      - name: Labeler 🤖🏷
-        uses: fuxingloh/multi-labeler@v1
-
-      - name: Check for conventional Commits labels ✨ 🐛 🧰
+      - name: SemVer labels ✨ 🐛 🧰
         uses: docker://agilepathway/pull-request-label-checker:latest
         with:
-          one_of: feature,fix,chore
+          one_of: major,minor,patch,chore
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check for basic PR labels 👮🏻‍♂️🏷
-        uses: docker://agilepathway/pull-request-label-checker:latest
-        with:
-          none_of: |
-            duplicate 👯‍♂️,invalid 🙊,tasks to complete,wontfix 🧌,locked: breaking 💥,locked: resolved ✅,locked: spam 👮🏻‍♂️,state: blocked,state: inactive,state: waiting...,
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check for effort labels 💪🏼👨🏼‍💻
+      - name: Check for effort labels 💪🏼 👨🏼‍💻
         uses: docker://agilepathway/pull-request-label-checker:latest
         with:
           one_of: |
             effort: 1️⃣,effort: 1️⃣3️⃣,effort: 2️⃣,effort: 3️⃣,effort: 5️⃣,effort: 8️⃣,
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check for work labels 🧠👩🏼‍💻
+      - name: Check for work labels 🧠 👩🏼‍💻
         uses: docker://agilepathway/pull-request-label-checker:latest
         with:
           one_of: |

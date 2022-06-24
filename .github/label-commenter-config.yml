@@ -1,0 +1,212 @@
+#                     . .:.:.:.:. .:\     /:. .:.:.:.:. ,
+#                .-._  `..:.:. . .:.:`- -':.:. . .:.:.,'  _.-.
+#               .:.:.`-._`-._..-''_...---..._``-.._.-'_.-'.:.:.
+#            .:.:. . .:_.`' _..-''._________,``-.._ `.._:. . .:.:.
+#         .:.:. . . ,-'_.-''      ||_-(O)-_||      ``-._`-. . . .:.:.
+#        .:. . . .,'_.'           '---------'           `._`.. . . .:.
+#      :.:. . . ,','               _________               `.`. . . .:.:
+#     `.:.:. .,','            _.-''_________``-._            `._.     _.'
+#   -._  `._./ /            ,'_.-'' ,       ``-._`.          ,' '`:..'  _.-
+#  .:.:`-.._' /           ,','                   `.`.       /'  '  \\.-':.:.
+#  :.:. . ./ /          ,','               ,       `.`.    / '  '  '\\. .:.:
+# :.:. . ./ /          / /    ,                      \ \  :  '  '  ' \\. .:.:
+# .:. . ./ /          / /            ,          ,     \ \ :  '  '  ' '::. .:.
+# :. . .: :    o     / /                               \ ;'  '  '  ' ':: . .:
+# .:. . | |   /_\   : :     ,                      ,    : '  '  '  ' ' :: .:.
+# :. . .| |  ((<))  | |,          ,       ,             |\'__',-._.' ' ||. .:
+# .:.:. | |   `-'   | |---....____                      | ,---\/--/  ' ||:.:.
+# ------| |         : :    ,.     ```--..._   ,         |''  '  '  ' ' ||----
+# _...--. |  ,       \ \             ,.    `-._     ,  /: '  '  '  ' ' ;;..._
+# :.:. .| | -O-       \ \    ,.                `._    / /:'  '  '  ' ':: .:.:
+# .:. . | |_(`__       \ \                        `. / / :'  '  '  ' ';;. .:.
+# :. . .<' (_)  `>      `.`.          ,.    ,.     ,','   \  '  '  ' ;;. . .:
+# .:. . |):-.--'(         `.`-._  ,.           _,-','      \ '  '  '//| . .:.
+# :. . .;)()(__)(___________`-._`-.._______..-'_.-'_________\'  '  //_:. . .:
+# .:.:,' \/\/--\/--------------------------------------------`._',;'`. `.:.:.
+# :.,' ,' ,'  ,'  /   /   /   ,-------------------.   \   \   \  `. `.`. `..:
+# ,' ,'  '   /   /   /   /   //                   \\   \   \   \   \  ` `.SSt
+---
+comment:
+  header: Hi 👋🏾, there you earthlings 👩🏽‍🌾 👨🏿‍🌾 🐄 🐖 🦃
+  footer: "Be kind to animals 🐄 🐖 🦃"
+
+labels:
+  - name: mvpr 🌮
+    labeled:
+      pr:
+        body: |
+          🏷 ( MVPR 🌮 )
+          You 👨🏿‍🌾 deserve a vegan taco 🌮!
+
+          Your effort is very much appreciated, please someone in here type '/giphy Have a taco! in a comment'
+  - name: "locked: resolved ✅"
+    labeled:
+      issue:
+        body: |
+          🏷 ( locked: resolved ✅ )
+          This issue has been **LOCKED** because of it being resolved 👩🏽‍🌾!
+
+          The issue has been fixed and is therefore considered resolved.
+          If you still encounter this or it has changed, open a new issue instead of responding to solved ones.
+        action: close
+        locking: lock
+        lock_reason: resolved
+  - name: "locked: heated 🧯"
+    labeled:
+      issue:
+        body: |
+          🏷 ( locked: heated 🧯 )
+          This issue has been **LOCKED** because of heated conversation 🧯!
+
+          We appreciate exciting conversations, as long as they won't become too aggressive and/or emotional.
+        locking: lock
+        lock_reason: too heated
+      pr:
+        body: |
+          🏷 ( locked: heated 🧯 )
+          This pull-request has been **LOCKED** because of heated conversation 🧯!
+
+          We appreciate exciting conversations, as long as they won't become too aggressive and/or emotional.
+        locking: lock
+        lock_reason: too heated
+    unlabeled:
+      issue:
+        body: |
+          Unlabeled -> 🏷 ( locked: heated 🧯 )
+          This issue has been unlocked now 🐖.
+        locking: unlock
+      pr:
+        body: |
+          Unlabeled -> 🏷 ( locked: heated 🧯 )
+          This pull-request has been unlocked now 🐖.
+        locking: unlock
+  - name: "locked: spam 👮🏻‍♂️"
+    labeled:
+      issue:
+        body: |
+          🏷 ( locked: spam 👮🏻‍♂️ )
+          This issue has been **LOCKED** because of spam 🙊!
+
+          Please do not spam messages and/or issues on the issue tracker. You may get blocked from this repository for doing so.
+        action: close
+        locking: lock
+        lock_reason: spam
+      pr:
+        body: |
+          🏷 ( locked: spam 👮🏻‍♂️ )
+          This pull-request has been **LOCKED** because of spam 🙊!
+
+          Please do not spam messages and/or pull-requests on this project. You may get blocked from this repository for doing so.
+        action: close
+        locking: lock
+        lock_reason: spam
+  - name: proposal ✨
+    labeled:
+      issue:
+        body: |
+          🏷 ( proposal ✨ )
+          Thank you @{{ issue.user.login }} for suggesting this 🐄.
+
+          We really appreciate your time and help 🫶🏾.
+  - name: "locked: breaking 💥"
+    labeled:
+      issue:
+        body: |
+          🏷 ( locked: breaking 💥 )
+          This issue has been **LOCKED** because of breaking changes 💩!
+
+          We appreciate exciting contributions, as long as they don't break anything.
+        locking: lock
+        lock_reason: breaking changes
+      pr:
+        body: |
+          🏷 ( locked: breaking 💥 )
+          This pull-request has been **LOCKED** because of breaking changes 💩!
+
+          We appreciate exciting contributions, as long as they don't break anything.
+        locking: lock
+        lock_reason: breaking changes
+    unlabeled:
+      issue:
+        body: |
+          Unlabeled -> 🏷 ( locked: breaking 💥 )
+          This issue has been unlocked now 🐖.
+        locking: unlock
+      pr:
+        body: |
+          Unlabeled -> 🏷 ( locked: breaking 💥 )
+          This pull-request has been unlocked now 🐖.
+        locking: unlock
+  - name: duplicate 👯‍♂️
+    labeled:
+      issue:
+        body: |
+          🏷 ( duplicate 👯‍♂️ )
+          We really appreciate your time and help, but this issue already exists 🐫.
+        action: close
+  - name: good first issue 👑
+    labeled:
+      issue:
+        body: |
+          🏷 ( good first issue 👑 )
+          This issue is easy for contributing. Everyone can work on this 🐄 🐖 🦃.
+
+  - name: "help wanted 🙏🏾"
+    labeled:
+      issue:
+        body: |
+          🏷 ( help wanted 🙏🏾 )
+          Hello, anybody out there 👀 ?
+
+          Any help would be very much appreciated 🐧. Maybe a '/giphy help!' on the comments could do something 🦩.
+      pr:
+        body: |
+          🏷 ( help wanted 🙏🏾 )
+          Hello, anybody out there 👀 ?
+
+          Any help would be very much appreciated 🐧. Maybe a '/giphy help!' on the comments could do something 🦩.
+  - name: invalid 🙊
+    labeled:
+      issue:
+        body: |
+          🏷 ( invalid 🙊 )
+          Please follow the issue templates 🐈.
+        action: close
+      pr:
+        body: |
+          🏷 ( invalid 🙊 )
+          Thank you @{{ pull_request.user.login }} for suggesting this. Please follow the pull request templates 🐈.
+        action: close
+    unlabeled:
+      issue:
+        body: |
+          Unlabeled -> 🏷 ( invalid 🙊 )
+          Thank you for following the template. The repository owner will reply 🦬.
+        action: open
+  - name: wontfix 🧌
+    labeled:
+      issue:
+        body: |
+          🏷 ( wontfix 🧌 )
+          This will not be worked on but we appreciate your contribution 🦙.
+        action: close
+    unlabeled:
+      issue:
+        body: |
+          🏷 ( wontfix 🧌 )
+          This has become active again 🐖.
+        action: open
+  - name: "type: hotfix 🚑"
+    labeled:
+      issue:
+        body: |
+          🏷 ( type: hotfix 🚑 )
+          Whe need 👨🏿‍🌾 help, now!
+
+          But please someone put a '/giphy everything is fine' in the comments
+      pr:
+        body: |
+          🏷 ( type: hotfix 🚑 )
+          To the rescue 👨🏿‍🌾 !
+
+          But please someone put a '/giphy we are just fine' in the comments

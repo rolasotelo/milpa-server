@@ -1,0 +1,27 @@
+#                                                   _  _
+#                                                  (\\( \
+#                                                   `.\-.)
+#                               _...._            _,-'   `-.
+# \                           ,'      `-._.---.,-'       .  \
+#  \`.                      ,'                               `.
+#   \ `-...__              /                           .   .:  y
+#    `._     ``--..__     /                           ,'`---._/
+#       `-._         ``--'                      |    /_
+#           `.._                   _            ;   <_ \
+#               `--.___             `.           `-._ \ \
+#                      `--<           `.     (\ _/)/ `.\/
+#                          \            \     `
+---
+name: PR labeler
+on:
+  pull_request:
+    types:
+      - synchronize
+      - reopened
+
+jobs:
+  labeler:
+    name: Labeler 🏷
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fuxingloh/multi-labeler@v1

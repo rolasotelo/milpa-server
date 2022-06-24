@@ -1,12 +1,42 @@
+# Gimli by Shanaka Dias
+#              _.-;-._
+#             ;_.JL___;
+#             F"-/\_-7L
+#             | a/ e | \
+#            ,L,c;,.='/;,
+#         _,-;;S:;:S;;:' '--._
+#        ;. \;;s:::s;;: .'   /\
+#       /  \  ;::::;;  /    /  \
+#      / ,  k ;S';;'S.'    j __,l
+#   ,---/| /  /S   /S '.   |'   ;
+#  ,Ljjj |/|.' s .' s   \  L    |
+#  LL,_ ]( \    /    '.  '.||   ;
+#  ||\ > /  ;-.'_.-.___\.-'(|=="(
+#  JJ," /   |_  [   ]     _]|   /
+#   LL\/   ,' '--'-'-----'  \  (
+#   ||     ;      |          |  >
+#   JJ     |      |\         |,/
+#    LL    |      ||       ' |
+#    ||    |      ||       . |
+#    JJ    /_     ||       ;_|
+#     LL   L "==='|i======='_|
+#     ||    i----' '-------';
+#     JJ    ';-----.------,-'
+#      LL     L_.__J,'---;'
+#      ||      |   ,|    (
+#      JJ     .'=  (|  ,_|
+#       LL   /    .'L_    \
+# snd   ||   '---'    '.___>
+---
 version: v1
 
 labels:
-  - label: "feature"
+  - label: "minor"
     sync: true
     matcher:
       title: ".*feat: .*"
 
-  - label: "fix"
+  - label: "patch"
     sync: true
     matcher:
       title: ".*fix: .*"
@@ -16,7 +46,7 @@ labels:
     matcher:
       title: ".*chore: .*"
 
-  - label: "breaking"
+  - label: "major"
     sync: true
     matcher:
       body: "(\\n|.)*BREAKING CHANGE(S|): (\\n|.)*"
@@ -30,12 +60,6 @@ labels:
         any: ["src/**", "**/src/**"]
         count:
           neq: 1
-
-  - label: "tasks to complete"
-    sync: true
-    matcher:
-      body: "(\\n|.)*- \\[ \\] (\\n|.)*"
-      comment: "(\\n|.)*- \\[ \\] (\\n|.)*"
 
   - label: "type: feature ✨"
     sync: true
@@ -136,6 +160,11 @@ labels:
     sync: true
     matcher:
       body: "(\\n|.)*/5(\\n|.)*"
+
+  - label: "effort: 8️⃣"
+    sync: true
+    matcher:
+      body: "(\\n|.)*/8(\\n|.)*"
 
   - label: "effort: 1️⃣3️⃣"
     sync: true
