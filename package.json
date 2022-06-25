@@ -12,6 +12,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint --cache --ext .js,.ts,.tsx .",
+    "prettier": "npx prettier --write .",
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
