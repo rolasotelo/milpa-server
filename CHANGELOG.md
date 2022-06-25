@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Handle basic handshake with milpa client
 
+- Handle basic handshake with milpa client
 
 [unreleased]: https://github.com/nantli/milpa-server/compare/v1.0.1...HEAD

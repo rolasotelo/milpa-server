@@ -20,7 +20,7 @@
   </a>
 </p
 
-This repository contains a SocketIO server orchestrating game rooms and matches for Milpa card game. 
+This repository contains a SocketIO server orchestrating game rooms and matches for Milpa card game.
 
 ### Here is a working live demo : [milpa.online](https://milpa.online) (WIP 🚧).
 

@@ -28,7 +28,7 @@
 ---
 comment:
   header: Hi 👋🏾, there you earthlings 👩🏽‍🌾 👨🏿‍🌾 🐄 🐖 🦃
-  footer: "Be kind to animals 🐄 🐖 🦃"
+  footer: 'Be kind to animals 🐄 🐖 🦃'
 
 labels:
   - name: mvpr 🌮
@@ -39,7 +39,7 @@ labels:
           You 👨🏿‍🌾 deserve a vegan taco 🌮!
 
           Your effort is very much appreciated, please someone in here type '/giphy Have a taco! in a comment'
-  - name: "locked: resolved ✅"
+  - name: 'locked: resolved ✅'
     labeled:
       issue:
         body: |
@@ -51,7 +51,7 @@ labels:
         action: close
         locking: lock
         lock_reason: resolved
-  - name: "locked: heated 🧯"
+  - name: 'locked: heated 🧯'
     labeled:
       issue:
         body: |
@@ -80,7 +80,7 @@ labels:
           Unlabeled -> 🏷 ( locked: heated 🧯 )
           This pull-request has been unlocked now 🐖.
         locking: unlock
-  - name: "locked: spam 👮🏻‍♂️"
+  - name: 'locked: spam 👮🏻‍♂️'
     labeled:
       issue:
         body: |
@@ -108,7 +108,7 @@ labels:
           Thank you @{{ issue.user.login }} for suggesting this 🐄.
 
           We really appreciate your time and help 🫶🏾.
-  - name: "locked: breaking 💥"
+  - name: 'locked: breaking 💥'
     labeled:
       issue:
         body: |
@@ -151,7 +151,7 @@ labels:
           🏷 ( good first issue 👑 )
           This issue is easy for contributing. Everyone can work on this 🐄 🐖 🦃.
 
-  - name: "help wanted 🙏🏾"
+  - name: 'help wanted 🙏🏾'
     labeled:
       issue:
         body: |
@@ -196,7 +196,7 @@ labels:
           🏷 ( wontfix 🧌 )
           This has become active again 🐖.
         action: open
-  - name: "type: hotfix 🚑"
+  - name: 'type: hotfix 🚑'
     labeled:
       issue:
         body: |
