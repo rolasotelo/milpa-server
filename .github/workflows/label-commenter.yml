@@ -1,0 +1,37 @@
+#                       _..-'(                       )`-.._
+#                    ./'. '||\\.       (\_/)       .//||` .`\.
+#                 ./'.|'.'||||\\|..    )O O(    ..|//||||`.`|.`\.
+#              ./'..|'.|| |||||\`````` '`"'` ''''''/||||| ||.`|..`\.
+#            ./'.||'.|||| ||||||||||||.     .|||||||||||| |||||.`||.`\.
+#           /'|||'.|||||| ||||||||||||{     }|||||||||||| ||||||.`|||`\
+#          '.|||'.||||||| ||||||||||||{     }|||||||||||| |||||||.`|||.`
+#         '.||| ||||||||| |/'   ``\||``     ''||/''   `\| ||||||||| |||.`
+#         |/' \./'     `\./         \!|\   /|!/         \./'     `\./ `\|
+#         V    V         V          }' `\ /' `{          V         V    V
+#         `    `         `               V               '         '    '
+
+# Vivian Aldridge
+---
+name: Comment labels
+
+on:
+  issues:
+    types: [labeled]
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  comment:
+    name: Comment label change 💬 🏷
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v2
+
+      - name: Label Commenter 💬 🏷
+        uses: peaceiris/actions-label-commenter@v1

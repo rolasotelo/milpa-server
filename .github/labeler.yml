@@ -1,143 +1,172 @@
+# Gimli by Shanaka Dias
+#              _.-;-._
+#             ;_.JL___;
+#             F"-/\_-7L
+#             | a/ e | \
+#            ,L,c;,.='/;,
+#         _,-;;S:;:S;;:' '--._
+#        ;. \;;s:::s;;: .'   /\
+#       /  \  ;::::;;  /    /  \
+#      / ,  k ;S';;'S.'    j __,l
+#   ,---/| /  /S   /S '.   |'   ;
+#  ,Ljjj |/|.' s .' s   \  L    |
+#  LL,_ ]( \    /    '.  '.||   ;
+#  ||\ > /  ;-.'_.-.___\.-'(|=="(
+#  JJ," /   |_  [   ]     _]|   /
+#   LL\/   ,' '--'-'-----'  \  (
+#   ||     ;      |          |  >
+#   JJ     |      |\         |,/
+#    LL    |      ||       ' |
+#    ||    |      ||       . |
+#    JJ    /_     ||       ;_|
+#     LL   L "==='|i======='_|
+#     ||    i----' '-------';
+#     JJ    ';-----.------,-'
+#      LL     L_.__J,'---;'
+#      ||      |   ,|    (
+#      JJ     .'=  (|  ,_|
+#       LL   /    .'L_    \
+# snd   ||   '---'    '.___>
+---
 version: v1
 
 labels:
-  - label: "feature"
+  - label: 'minor'
     sync: true
     matcher:
-      title: ".*feat: .*"
+      title: '.*feat: .*'
 
-  - label: "fix"
+  - label: 'patch'
     sync: true
     matcher:
-      title: ".*fix: .*"
+      title: '.*fix: .*'
 
-  - label: "chore"
+  - label: 'chore'
     sync: true
     matcher:
-      title: ".*chore: .*"
+      title: '.*chore: .*'
 
-  - label: "breaking"
+  - label: 'major'
     sync: true
     matcher:
       body: "(\\n|.)*BREAKING CHANGE(S|): (\\n|.)*"
       commmits: "(\\n|.)*BREAKING CHANGE(S|): (\\n|.)*"
       comment: "(\\n|.)*BREAKING CHANGE(S|): (\\n|.)*"
 
-  - label: "attention 🚨"
+  - label: 'attention 🚨'
     sync: true
     matcher:
       files:
-        any: ["src/**", "**/src/**"]
+        any: ['src/**', '**/src/**']
         count:
           neq: 1
 
-  - label: "tasks to complete"
-    sync: true
-    matcher:
-      body: "(\\n|.)*- \\[ \\] (\\n|.)*"
-      comment: "(\\n|.)*- \\[ \\] (\\n|.)*"
-
-  - label: "type: feature ✨"
+  - label: 'type: feature ✨'
     sync: true
     matcher:
       body: "(\\n|.)*/feat(\\n|.)*"
 
-  - label: "type: documentation 📝"
+  - label: 'type: documentation 📝'
     sync: true
     matcher:
       body: "(\\n|.)*/docs(\\n|.)*"
 
-  - label: "type: fix 🩹"
+  - label: 'type: fix 🩹'
     sync: true
     matcher:
       body: "(\\n|.)*/fix(\\n|.)*"
 
-  - label: "type: hotfix 🚑"
+  - label: 'type: hotfix 🚑'
     sync: true
     matcher:
       body: "(\\n|.)*/hf (\\n|.)*"
 
-  - label: "type: infrastructure 🧱"
+  - label: 'type: infrastructure 🧱'
     sync: true
     matcher:
       body: "(\\n|.)*/infra(\\n|.)*"
 
-  - label: "type: security 🔒"
+  - label: 'type: security 🔒'
     sync: true
     matcher:
       body: "(\\n|.)*/sec (\\n|.)*"
 
-  - label: "type: bug 🐛"
+  - label: 'type: bug 🐛'
     sync: true
     matcher:
       body: "(\\n|.)*/bug(\\n|.)*"
 
-  - label: "type: testing 🔎"
+  - label: 'type: testing 🔎'
     sync: true
     matcher:
       body: "(\\n|.)*/test(\\n|.)*"
 
-  - label: "type: improvement ⚡️"
+  - label: 'type: improvement ⚡️'
     sync: true
     matcher:
       body: "(\\n|.)*/imp(\\n|.)*"
 
-  - label: "type: dx 👩🏼‍💻"
+  - label: 'type: dx 👩🏼‍💻'
     sync: true
     matcher:
       body: "(\\n|.)*/dx(\\n|.)*"
 
-  - label: "type: ci/cd 👷🏾"
+  - label: 'type: ci/cd 👷🏾'
     sync: true
     matcher:
       body: "(\\n|.)*/ci(\\n|.)*"
 
-  - label: "type: question 🤷🏽‍♀️"
+  - label: 'type: question 🤷🏽‍♀️'
     sync: true
     matcher:
       body: "(\\n|.)*/q (\\n|.)*"
 
-  - label: "work: clear 🥱"
+  - label: 'work: clear 🥱'
     sync: true
     matcher:
       body: "(\\n|.)*/clear(\\n|.)*"
 
-  - label: "work: chaotic 😱"
+  - label: 'work: chaotic 😱'
     sync: true
     matcher:
       body: "(\\n|.)*/chaotic(\\n|.)*"
 
-  - label: "work: complicated 😬"
+  - label: 'work: complicated 😬'
     sync: true
     matcher:
       body: "(\\n|.)*/complicated(\\n|.)*"
 
-  - label: "work: complex 😳"
+  - label: 'work: complex 😳'
     sync: true
     matcher:
       body: "(\\n|.)*/complex(\\n|.)*"
 
-  - label: "effort: 1️⃣"
+  - label: 'effort: 1️⃣'
     sync: true
     matcher:
       body: "(\\n|.)*/1 (\\n|.)*"
 
-  - label: "effort: 2️⃣"
+  - label: 'effort: 2️⃣'
     sync: true
     matcher:
       body: "(\\n|.)*/2(\\n|.)*"
 
-  - label: "effort: 3️⃣"
+  - label: 'effort: 3️⃣'
     sync: true
     matcher:
       body: "(\\n|.)*/3(\\n|.)*"
 
-  - label: "effort: 5️⃣"
+  - label: 'effort: 5️⃣'
     sync: true
     matcher:
       body: "(\\n|.)*/5(\\n|.)*"
 
-  - label: "effort: 1️⃣3️⃣"
+  - label: 'effort: 8️⃣'
+    sync: true
+    matcher:
+      body: "(\\n|.)*/8(\\n|.)*"
+
+  - label: 'effort: 1️⃣3️⃣'
     sync: true
     matcher:
       body: "(\\n|.)*/13(\\n|.)*"
