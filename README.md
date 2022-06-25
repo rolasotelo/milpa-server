@@ -18,7 +18,7 @@
   <a href="https://github.com/rolasotelo/milpa-server/actions/workflows/linter.yml">
     <img align="center" alt="Lint Code Base" src="https://github.com/rolasotelo/milpa-server/actions/workflows/linter.yml/badge.svg?branch=main" />
   </a>
-</p
+</p>
 
 This repository contains a SocketIO server orchestrating game rooms and matches for Milpa card game.
 
